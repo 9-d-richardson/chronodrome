@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block title %}Changelog{% endblock %}
+
+{% block content %}
+<h1>Changelog</h1>
+<ul>
+{% for change in changelog %}
+	<li>{{ change.created.date }}: {{ change.changelog_text }}</li>
+</ul>
+{% endfor %}
+{% endblock %}

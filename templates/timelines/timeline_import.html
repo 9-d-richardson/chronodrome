@@ -1,0 +1,35 @@
+{% extends 'user_form_base.html' %}
+{% load static %}
+{% block title %}Import timeline{% endblock title %}
+
+{% block content %}
+<div class="user-form{% if changed_input %} changed-input{% endif %}">
+  <h1>Import timeline</h1>
+    <p>This is for importing timelines from a text file or another website.
+      Here's how it works. First, give your timeline a name and a 
+      description. Then, copy a timeline from somewhere else. (But please 
+      don't steal the work of others!) The trick is in how it's formatted. 
+      Make sure that each line of text is just the title of an entry in your
+      timeline, with nothing else. (But don't worry about blank lines, it 
+      knows to ignore that.) Just copy-paste that list where it says "Copy 
+      here" and press submit. Then you're done! Each line will become an 
+      entry in your new timeline which you can then edit like normal to add
+      more information if you want.</p>
+  <form class="timeline-import-form" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ timeline_form }}
+    <br><br>
+    {{ import_form }}
+    <p><input name="save-timeline" type="submit" value="Create timeline"></p>
+  </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+  {{ block.super }}
+  <script>
+    warnOfUnsavedChanges();
+    stopEnterFromSubmitting();
+    markFieldErrors();
+  </script>
+{% endblock scripts %}

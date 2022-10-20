@@ -1,0 +1,10 @@
+{% extends 'search_base.html' %}
+
+{% block title %}Bookmarks{% endblock title %}
+
+{% block top %}
+    <h1>Bookmarks</h1>
+    {% if not page_obj %}
+        <h2>You haven't bookmarked any timelines yet</h2>
+    {% endif %}
+{% endblock top %}

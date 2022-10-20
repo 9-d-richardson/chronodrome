@@ -1,0 +1,20 @@
+{% extends 'search_base.html' %}
+
+{% block title %}
+    {% if not query %}
+    	All timelines
+    {% else %}
+    	Search for "{{ query }}"
+    {% endif %}
+{% endblock title %}
+
+{% block top %}
+    {% if not query %}
+    	<h1>All timelines</h1>
+    {% else %}
+    	<h1>Search for "<i>{{ query }}</i>"</h1>
+    {% endif %}
+    {% if not page_obj %}
+        <h2>No timelines found</h2>
+    {% endif %}
+{% endblock top %}

@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+<!-- Not a page to be viewed itself, just forms the base for pages with forms -->
+{% load static %}
+{% block styles %}
+	<link rel="stylesheet" href="{% static 'css/user_form_base.css' %}">
+{% endblock styles %}
+
+{% block scripts %}
+	<script src="{% static 'js/user_form_base.js' %}"></script>
+{% endblock scripts %}

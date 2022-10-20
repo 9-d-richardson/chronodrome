@@ -1,0 +1,73 @@
+/*Centers the inputs for user forms such as timeline-edit and 
+feedback-create and sets them at the right width, and puts a 
+gray background in the input fields*/
+.user-form {
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.user-form-label {
+    display: inline-block;
+    width: 150px;
+    text-align: right;
+  }
+
+.user-form input[type=text], 
+.user-form input[type=email], 
+.user-form input[type=password],
+.user-form textarea,
+.image-field {
+	width: 500px;
+	background-color: #F0F0F0;
+	margin-bottom: 5px;
+	vertical-align: top;
+}
+
+.image-field {
+	display: inline-block;
+	border-style: solid;
+	border-width: thin;
+	text-align: left;
+}
+
+@media screen and (max-width: 750px) {
+	.user-form-label {
+		width: 100%;
+		display: block;
+		text-align: center;
+	}
+}
+
+@media screen and (max-width: 550px) {
+	.user-form input[type=text], 
+	.user-form input[type=email], 
+	.user-form input[type=password], 
+	.user-form textarea,
+	.image-field {
+		width:95%;
+	}
+}
+
+/*For errors in user submissions*/
+.form-error-field {
+	border-style: solid;
+	border-color: red;
+	border-width: medium;
+	outline-color: red;
+}
+
+.form-error-text {
+	color: red;
+	text-align: center;
+	margin: 0px;
+	font-weight: bold;
+	font-size: 1.15em;
+}
+
+/*Makes the divider form stand out for easier navigation*/
+.divider {
+	background-color: Wheat;
+	border-style: double;
+	border-width: thick;
+}

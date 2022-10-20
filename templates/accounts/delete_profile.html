@@ -1,0 +1,33 @@
+{% extends 'user_form_base.html' %}
+{% block title %}
+  Delete account
+{% endblock title %}
+
+{% block content %}
+<div class="user-form">
+	<h1>Delete account</h1>
+	<form action="" method="post">{% csrf_token %}
+		<p class="form-error-text">Are you sure you want to delete your account? This action cannot be undone!</p>
+		<br>
+		<b>
+			{% if form.delete_timelines.errors %}
+        {% for error in form.delete_timelines.errors %}
+          <p class="form-error-text">{{ error }}</p>
+        {% endfor %}
+      {% endif %}
+			{{ form.delete_timelines.label_tag }}
+			<br>
+			{{ form.delete_timelines }}
+			{% if form.check_password.errors %}
+        {% for error in form.check_password.errors %}
+          <p class="form-error-text">{{ error }}</p>
+        {% endfor %}
+      {% endif %}
+			{{ form.check_password.label_tag }}
+			{{ form.check_password }}
+		</b>
+		<br>
+		<button type="submit">Confirm deletion</button>
+	</form>
+</div>
+{% endblock content %}

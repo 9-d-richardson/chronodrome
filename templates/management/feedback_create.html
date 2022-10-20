@@ -1,0 +1,24 @@
+{% extends 'user_form_base.html' %}
+{% load static %}
+{% block title %}Send feedback{% endblock title %}
+
+{% block content %}
+<h2>Send feedback</h2>
+<p>Have feedback, requests, or bug reports? Send it here!</p>
+<div class="user-form{% if changed_input %} changed-input{% endif %}">
+  <form class="feedback-form" method="post">
+      {% csrf_token %}
+        {{ form }}
+      <br>
+      <input name="save-feedback" type="submit" value="Give feedback">
+  </form>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+  {{ block.super }}
+  <script>
+    warnOfUnsavedChanges();
+    markFieldErrors();
+  </script>
+{% endblock scripts %}

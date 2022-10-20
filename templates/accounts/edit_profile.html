@@ -1,0 +1,31 @@
+{% extends 'user_form_base.html' %}
+{% load static %}
+{% block title %}Edit Your Profile{% endblock %}
+
+{% block content %}
+<div class="user-form{% if changed_input %} changed-input{% endif %}">
+  <h2>Editing user profile "{{ user }}"</h2>
+  <form class="profile-edit-form" method="POST">
+  	{% csrf_token %}
+  	{{ form }}
+    <p>
+    	<button name="user-form" type="submit">Submit</button>
+    </p>
+  </form>
+  <hr>
+  <h3><a href="{% url 'password_change' %}">Change Password</a></h3>
+  <h3><a href="{% url 'view_user' user %}">See Your Public Timelines</a></h3>
+  <h3><a href="{% url 'hidden_timelines' %}">See Your Hidden Timelines</a></h3>
+  <h3><a href="{% url 'delete_profile' %}">Delete Your Account</a></h3>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+  {{ block.super }}
+  <script>
+    warnOfUnsavedChanges();
+    stopEnterFromSubmitting();
+    markFieldErrors();
+  </script>
+{% endblock scripts %}

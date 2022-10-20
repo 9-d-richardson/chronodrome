@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load thumbnail %}
+{% block title %}{{ timeline.title }}{% endblock title %}
+{% block styles %}
+	<link rel="stylesheet" href="{% static 'css/timelines/timeline_detail.css' %}">
+{% endblock styles %}
+
+{% block content %}
+<div id="timeline-entry">
+	{% if timeline.hidden %}
+		<h3 class="error">Timeline is currently hidden. Only you can see this.</h3>
+	{% endif %}
+	{% if has_edit_permissions %}
+		<p><a href="{% url 'timeline_edit' timeline.pk %}">Edit</a> | 
+		<a href="{% url 'timeline_delete' timeline.pk %}">Delete</a></p>
+	{% endif %}
+	<h1 class="timeline-header">{{ timeline.title|upper }}</h1>
+
+	<span class="bookmark-row">
+		<p class="creator-name">
+			{% if timeline.creator.is_active %}
+				by <b><a href="{% url 'view_user' timeline.creator %}">{{ timeline.creator }}</a></b>
+			{% else %}
+				by <b>{{ timeline.creator }}</b> (deleted)
+			{% endif %}
+		</b></p>
+		{% if user.is_authenticated %}
+			<span class="bookmark-button">
+			<form method="post" class="bookmark-change">{% csrf_token %}
+				<div id="{{ timeline.pk }}-remove-bookmark" {% if user not in timeline.bookmarks.all %}hidden{% endif %}>
+					<button type="submit" class="remove-bookmark" value="{{ timeline.pk }}">
+						Remove bookmark
+					</button>
+				</div>
+				<div id="{{ timeline.pk }}-add-bookmark" {% if user in timeline.bookmarks.all %}hidden{% endif %}>
+					<button type="submit" class="add-bookmark" value="{{ timeline.pk }}">
+						Add bookmark
+					</button>	
+				</div>
+			</form>
+			</span>
+		{% endif %}
+	</span>
+	{% if timeline.header_image %}
+		<div class="image">
+			<a href="{{ timeline.header_image.url }}">
+				{% thumbnail timeline.header_image "760x500" upscale=False as im %}
+					<img class="timeline-image" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+				{% endthumbnail %}
+			</a>
+		</div>
+	{% endif %}
+	<p>{{ timeline.description|linebreaks }}</p>
+</div>
+
+<div id="user-has-read">
+	{% if user.is_authenticated %}
+		{% if user_has_finished_TL is True %}
+			<h3>Congratulations, you've finished this timeline!</h3>
+		{% else %}
+			<h3>You have finished {{ total_read }} out of 
+				{{ total_entries }} entries in this timeline.</h3>
+		{% endif %}
+	{% else %}
+		<h3><em>
+			<a href="{% url 'login' %}">Log in</a> or 
+			<a href="{% url 'signup' %}">sign up</a> to track your progress</a>
+		</em></h3>
+	{% endif %}
+</div>
+
+<ol>
+{% for item in items %}
+
+	{% if item.type == 'entry' %}{% with item.item as entry %}
+		<div id ="entry-{{ entry.pk }}" class="entry{% if item.user_has_read %} has-finished{% endif %}">
+			<li class="list-entry">
+				{% if entry.link != ''%}
+					<a href="{{ entry.link }}" target="_blank" rel="noopener noreferrer">
+				{% endif %}
+				<b>{{ entry.name }}</b></a>
+				{% if entry.author != '' %}
+					by <b>{{ entry.author }}</b>
+				{% endif %}
+				{% if entry.section != '' %} 
+					({{ entry.section }})
+				{% endif %}
+			</li>
+			{% if entry.date %}
+				<p class="entry-date"><i>{{ entry.date }}</i></p>
+			{% endif %}
+
+			<blockquote>{{ entry.comment|linebreaks }}</blockquote>
+		
+			{% if user.is_authenticated %}
+				<form class="user-has-read-change" method="post">{% csrf_token %}
+					<div class="button-row" id="is-read-{{ entry.pk }}" {% if not item.user_has_read %}hidden{% endif %}>
+						<button type="submit" class="mark-as-unread" value="{{ entry.pk }}">
+							Mark as unread
+						</button>
+					</div>
+					<div class="button-row" id="is-unread-{{ entry.pk }}" {% if item.user_has_read %}hidden{% endif %}>
+						<button type="submit" class="mark-as-read" value="{{ entry.pk }}">
+							Mark as read
+						</button>
+						<button type="submit" class="mark-all-above-as-read" value="{{ entry.pk }}">
+							Mark all above as read
+						</button>
+					</div>
+				</form>
+			{% endif %}
+		</div>
+	{% endwith %}
+
+	{% elif item.type == 'divider' %}{% with item.item as divider %}
+		{% if item.is_blank %}
+			<hr class="divider-blank">
+		{% else %}
+			{% if divider.name %}<div class="divider-major">
+			{% else %}<div class="divider-minor">
+			{% endif %}
+				<h1 class="divider-name">{{ divider.name }}</h1>
+				<h2 class="divider-subheading">{{ divider.subheading }}</h2>
+				{% if divider.comment %}
+					<div class="divider-comment">{{ divider.comment|linebreaks }}</div>
+				{% endif %}
+			</div>
+		{% endif %}
+	{% endwith %}
+
+	{% elif item.type == 'image' %}{% with item.item as image %}
+		<div class="image">
+			<a href="{{ image.image.url }}">
+				{% thumbnail image.image "760x500" upscale=False as im %}
+					<img class="timeline-image" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+				{% endthumbnail %}
+			</a>
+			{% if image.caption %}
+				<p class="image-caption"><i>{{ image.caption }}</i></p>
+			{% endif %}
+		</div>
+	{% endwith %}{% endif %}
+{% endfor %}
+</ol>
+
+<p><i>Timeline updated: {{ timeline.updated.date }}</i></p>
+{% endblock content %}
+{% block scripts %}
+	<script src="{% static 'js/timelines/timeline_detail.js' %}"></script>
+{% endblock scripts %}

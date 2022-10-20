@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<h1>Welcome to ChronoDrome</h1>
+<ul>
+	<li>Make timelines!</li>
+	<li>Track your progress!</li>
+</ul>
+<p>ChronoDrome is a simple website with one purpose: creating and sharing timelines and 
+	reading orders. It's meant to be both simple and flexible, which you'll 
+	hopefully see when you start making timelines of your own.
+<p>What sort of stuff qualifies? Well, pretty much anything that should be read
+	or viewed or consumed in a particular order, whether it's your favorite shows
+	or your favorite series of books.
+<p>Have feedback, requests, or bug reports? Send them <a href="{% url 'feedback' %}">here</a>!</p>
+<hr>
+<h3><a href="{% url 'timeline_search' %}">View All Timelines</a></h3>
+<hr>
+<h3>Changelog</h3>
+<ul>
+{% for change in changelog %}
+	<li>{{ change.created.date }}: {{ change.changelog_text }}</li>
+{% endfor %}
+</ul>
+<p><a href="{% url 'changelog' %}">View all</a></p>
+{% endblock %}

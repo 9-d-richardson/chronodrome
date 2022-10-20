@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Title{% endblock %}
+{% block styles %}
+	<link rel="stylesheet" href="{% static 'css/' %}">
+{% endblock styles %}
+
+{% block content %}
+	<h1>Title</h1>
+{% endblock %}
+
+{% block scripts %}
+	<script src="{% static 'js/' %}"></script>
+{% endblock scripts %}

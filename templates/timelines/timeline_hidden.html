@@ -1,0 +1,10 @@
+{% extends 'search_base.html' %}
+
+{% block title %}Your Hidden Timelines{% endblock title %}
+
+{% block top %}
+    <h1>Your Hidden Timelines</h1>
+    {% if not page_obj %}
+        <h2>You don't currently have any hidden timelines</h2>
+    {% endif %}
+{% endblock top %}

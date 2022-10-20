@@ -1,0 +1,25 @@
+{% extends 'search_base.html' %}
+
+{% block title %}{{ viewed_user }}{% endblock title %}
+
+{% block top %}
+{% if viewed_user.is_active %}
+	<h1>Profile: {{ viewed_user }}</h1>
+	<blockquote>{{ viewed_user.user_description|linebreaks }}</blockquote>
+	{% if finished_TLs %}
+		<p><b>{{ viewed_user }}</b> has finished
+			{% for timeline in finished_TLs %}
+				<a href="{% url 'timeline_detail' timeline.pk %}"><i>{{ timeline }}</i></a>{% if not forloop.last %}, {% endif %}
+			{% endfor %}.
+		</p>
+	{% endif %}
+	<hr>
+	{% if not page_obj %}
+		<h2>{{ viewed_user }} hasn't created any timelines yet</h2>
+	{% else %}
+		<h2>{{ viewed_user }}'s timelines:</h2>
+	{% endif %}
+{% else %}
+	<h1>This account has been deleted.</h1>
+{% endif %}
+{% endblock top %}

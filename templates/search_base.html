@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+<!-- Not a page to be viewed itself, this is just to show filtered timelines for timeline_search, user_view, and bookmarks -->
+{% load static %}
+{% load thumbnail %}
+{% block styles %}
+	<link rel="stylesheet" href="{% static 'css/search_base.css' %}">
+{% endblock styles %}
+{% block content %}
+	{% block top %}
+	{% endblock top %}
+	
+	<!-- From https://docs.djangoproject.com/en/4.0/topics/pagination/ -->
+	{% if page_obj %}
+		<div class="pagination">		
+      {% if page_obj.has_previous %}
+        <a href="?page=1{% if sort %}&sort={{ sort }}{% endif %}">&laquo; First</a>
+        <a href="?page={{ page_obj.previous_page_number }}{% if sort %}&sort={{ sort }}{% endif %}">Prev</a>
+      {% endif %}
+      Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+      {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}{% if sort %}&sort={{ sort }}{% endif %}">Next</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}{% if sort %}&sort={{ sort }}{% endif %}">Last &raquo;</a>
+      {% endif %}
+			<div class="sort-menu">
+				<label for="sort">Sort by:</label>
+				<select class="sort" name="sort" id="sort-top">
+				  <option value="updated">Recently updated</option>
+				  <option value="alpha">Alphabetical</option>
+				  <option value="bookmarks">Most bookmarked</option>
+				</select>
+			</div>
+		</div>
+	{% endif %}
+
+	{% for timeline in page_obj %}
+    <div class="search-result{% if timeline.user_has_finished %} has-finished{% endif %}">
+    	{% if timeline.current_TL.header_image %}
+    		<span class="search-thumbnail">
+    			<a href="{% url 'timeline_detail' timeline.current_TL.pk %}">
+		    		{% thumbnail timeline.current_TL.header_image "150x150" upscale=False as im %}
+							<img class="timeline-image" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+						{% endthumbnail %}
+					</a>
+				</span>
+			{% endif %}
+    	<h3><a href="{% url 'timeline_detail' timeline.current_TL.pk %}">
+        {{ timeline.current_TL.title }}</a></h3>
+      {% if timeline.current_TL.creator.is_active %}
+    		<p>by <b><a href="{% url 'view_user' timeline.current_TL.creator %}">{{ timeline.current_TL.creator }}</a></b></p>
+    	{% else %}
+    		<p>by <b>{{ timeline.current_TL.creator }}</b> (deleted)
+    	{% endif %}
+  		<p class="truncated-description">
+  			{{ timeline.current_TL.description|truncatechars:255 }}
+  		</p>
+
+    	<div class="bookmark-row">
+        <p><i>{% if user.is_authenticated %}
+            {% if timeline.user_has_finished %}
+            	Congratulations, you've finished this timeline!
+            {% else %}
+                You have finished {{ timeline.total_read }} out of 
+                {{ timeline.total_entries }} entries in this timeline.
+            {% endif %}
+        {% else %}
+        	{{ timeline.total_entries }} entries total.
+        {% endif %}</i></p>
+
+				{% if user.is_authenticated %}<span class="bookmark-button">
+					<form method="post" class="bookmark-change">{% csrf_token %}
+						<div id="{{ timeline.current_TL.pk }}-remove-bookmark" {% if not timeline.is_bookmarked %}hidden{% endif %}>
+							<button type="submit" class="remove-bookmark" value="{{ timeline.current_TL.pk }}">
+								Remove bookmark
+							</button>
+						</div>
+						<div id="{{ timeline.current_TL.pk }}-add-bookmark" {% if timeline.is_bookmarked %}hidden{% endif %}>
+							<button type="submit" class="add-bookmark" value="{{ timeline.current_TL.pk }}">
+								Add bookmark
+							</button>
+						</div>
+					</form>
+				</span>{% endif %}
+				
+			</div>
+	  </div>
+    {% if not forloop.last %}
+    	<hr>
+    {% endif %}
+	{% endfor %}
+
+	{% if page_obj %}
+		<br>
+		<div class="pagination">		
+      {% if page_obj.has_previous %}
+        <a href="?page=1{% if sort %}&sort={{ sort }}{% endif %}">&laquo; First</a>
+        <a href="?page={{ page_obj.previous_page_number }}{% if sort %}&sort={{ sort }}{% endif %}">Prev</a>
+      {% endif %}
+      Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+      {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}{% if sort %}&sort={{ sort }}{% endif %}">Next</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}{% if sort %}&sort={{ sort }}{% endif %}">Last &raquo;</a>
+      {% endif %}
+			<div class="sort-menu">
+				<label for="sort">Sort by:</label>
+				<select class="sort" name="sort" id="sort-bottom">
+				  <option value="updated">Recently updated</option>
+				  <option value="alpha">Alphabetical</option>
+				  <option value="bookmarks">Most bookmarked</option>
+				</select>
+			</div>
+		</div>
+	{% endif %}
+
+{% endblock content %}
+
+{% block scripts %}
+	<script src="{% static 'js/search_base.js' %}"></script>
+{% endblock scripts %}
