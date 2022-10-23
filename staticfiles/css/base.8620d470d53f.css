@@ -1,0 +1,133 @@
+/* General font/display stuff */
+* {
+  word-wrap: break-word;
+}
+
+p, li {
+	font-size: 1.25em;
+}
+
+h1, h2, h3 {
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
+h1 {
+	font-size: 2.5em;
+}
+
+h2 {
+	font-size: 1.65em;
+}
+
+h3 {
+	font-size: 1.4em;
+}
+
+input[type=text], input[type=email], input[type=password], textarea {
+	font-size: 1.02em;
+	font-family: Arial, Sans-Serif;
+}
+
+input:placeholder-shown {
+	font-style: italic;
+}
+
+/* Puts the number within the grey box for entries */
+ol {
+  padding-left: 0px;
+  list-style-position: inside;
+}
+
+/* Styling for entry comments and user descriptions */
+blockquote {
+  border-left: 3px solid #000000;
+  margin: 1.5em 10px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  padding: 0.5em 10px;
+  padding-top: 0px;
+  padding-bottom: 0px
+}
+
+/* For success/failure messages */
+.success {
+	color: green;
+	text-align: center;
+}
+
+.error {
+	color: red;
+	text-align: center;
+}
+
+/*Resizes the header for wide screens, narrow screens, tablets/phones */
+.header {
+	display: inline;
+	padding-left: 150px;
+}
+
+.header-image {
+	height: auto;
+	max-width: 100%;
+}
+
+.header-right {
+	float: right;
+	padding-right: 150px;
+	text-align: center;
+	line-height: 1.5;
+}
+
+@media screen and (max-width: 1200px) {
+	.header {
+		padding-left: 0px;
+	}
+	.header-right {
+		padding-right: 0px;
+	}
+}
+
+@media screen and (max-width: 900px) {
+	.header-image {
+		display: block;
+		margin-left: auto;
+		margin-right: auto;
+	}
+	.header-right {
+		width: 100%;
+		margin: auto;
+		float: center;
+	}
+}
+
+/*Makes sure that the header never overlaps with the main body*/
+.end-header {
+	clear: right;
+}
+
+/*Sets width for the main body of text*/
+.content-block {
+	margin: auto;
+	max-width: 800px;
+}
+
+/*Greys out entries and timelines the user has finished*/
+.has-finished {
+	background-color: #EBEBEB;
+}
+
+/* For putting the add/remove bookmark button on the right side of a line with 
+text on the left, both for timeline_detail and search_base */
+.bookmark-row {
+	display:table;
+	width: 100%;
+	table-layout: fixed;
+}
+.bookmark-button {
+	display:table-cell;
+	text-align: right;
+	/* Decreases the space taken up by the add/remove bookmark button in order to
+	give more space to the text on the same line */
+	width: 150px;
+}

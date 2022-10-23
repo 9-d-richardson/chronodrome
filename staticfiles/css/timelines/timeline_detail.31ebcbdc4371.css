@@ -1,0 +1,93 @@
+.timeline-header {
+  text-align: center;
+}
+
+/*Puts mark as read/mark all as read buttons on the same line*/
+.button-row {
+  text-align: center;
+  padding-bottom: 5px;
+}
+.inline-button {
+  display:inline-block;
+  text-align: center;
+}
+
+/* This is for the first line of each entry */
+li.list-entry {
+  font-size: 1.35em;
+}
+
+/*Some fiddling with margins and padding to make things look nice*/
+.list-entry {
+  padding-top: 5px;
+  margin-left: 10px;
+  margin-bottom: 10px;
+}
+
+.entry-date {
+  margin: 10px;
+}
+
+/*Shrinks the margins for various p elements, to tighten things up. But not 
+the main timeline description, since that will usually have much more text 
+and so benefits from extra spacing to become more readable */
+blockquote p, .divider-comment p, .creator-name {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+/*Puts just a bit of space above and below each divider, as well as within */
+.divider-major, .divider-minor {
+  text-align: center;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  padding: 5px;
+}
+
+/*Dividers with header text or no text at all get double borders, otherwise
+they get single borders*/
+.divider-major, .divider-blank {
+  border-style: double;
+  border-width: thick;
+  color: black;
+}
+.divider-minor {
+  border-style: solid;
+  border-width: medium;
+}
+
+.divider-name, .divider-subheading {
+  margin-left: auto;
+  margin-right: auto;
+  font-variant: small-caps;
+  margin: 0px;
+}
+
+.image {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+.image-caption {
+  margin-top: 5px;
+  margin-bottom: 15px;
+}
+
+/*Images are slightly less wide than the overall column, just as a stylistic choice*/
+.timeline-image {
+  max-height: 500px;
+  max-width: 760px;
+  object-fit: scale-down;
+}
+
+/*Smoothly shrinks TL images for smaller screens*/
+@media screen and (max-width: 800px) {
+  .timeline-image {
+    max-width: 95%;
+    /*This line is needed because the thumbnail generator gives each image a 
+    fixed height, which breaks the layout a bit on mobile if it isn't removed*/
+    height: unset;
+  }
+}
+

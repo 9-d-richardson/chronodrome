@@ -1,0 +1,25 @@
+/*For the pagination/sort bar */
+.inline {
+	display: inline;
+}
+.sort-menu {
+	float: right;
+}
+
+/*Keeps the text from butting right against the edge of the grey box*/
+.search-result {
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
+/*Puts the thumbnail image in the right space*/
+.search-thumbnail {
+	float: right;
+	padding-left: 5px;
+}
+
+/*Shrinks margin around the descriptions*/
+.truncated-description {
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
