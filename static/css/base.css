@@ -1,6 +1,15 @@
 /* General font/display stuff */
 * {
   word-wrap: break-word;
+  font-family: Times New Roman, Serif;
+}
+
+button, select, input, textarea {
+	font-family: Arial, sans-serif;
+}
+
+body {
+	background-color: white;
 }
 
 p, li {
@@ -26,7 +35,6 @@ h3 {
 
 input[type=text], input[type=email], input[type=password], textarea {
 	font-size: 1.02em;
-	font-family: Arial, Sans-Serif;
 }
 
 input:placeholder-shown {

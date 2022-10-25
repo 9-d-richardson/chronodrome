@@ -15,6 +15,10 @@ function stopEnterFromSubmitting() {
 	});
 };
 
+function stopMultipleSubmissions(){
+	
+}
+
 /* Check for unsaved changes and warns if you navigate away without saving. It
 doesn't warn about any blank entries the user has added but that's fine. */
 function warnOfUnsavedChanges() {
