@@ -91,18 +91,23 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 if DEBUG:
-    DATABASE_NAME = BASE_DIR / 'db.sqlite3'
-else:
-    DATABASE_NAME = env.str('DATABASE_NAME')
-DATABASES = {
-    'default': {
-        'ENGINE': env.str('DATABASE_ENGINE'),
-        'NAME': DATABASE_NAME,
-        'USER': env.str('DATABASE_USER'),
-        'PASSWORD': env.str('DATABASE_PASSWORD'),
-        'HOST': env.str('DATABASE_HOST'),
+    DATABASES = {
+        'default': {
+            'ENGINE': env.str('DATABASE_ENGINE'),
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': env.str('DATABASE_ENGINE'),
+            'NAME': env.str('DATABASE_NAME'),
+            'USER': env.str('DATABASE_USER'),
+            'PASSWORD': env.str('DATABASE_PASSWORD'),
+            'HOST': env.str('DATABASE_HOST'),
+            'OPTIONS': {'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"}
+        }
+    }
 
 
 # Password validation
