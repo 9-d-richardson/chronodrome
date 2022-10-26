@@ -50,9 +50,11 @@ INSTALLED_APPS = [
     'timelines',
     'management',
     # Creates thumbnails of images - https://github.com/jazzband/sorl-thumbnail
-    'sorl.thumbnail',   
-    'debug_toolbar',
+    'sorl.thumbnail', 
 ]
+
+if DEBUG:
+    INSTALLED_APPS.append('debug_toolbar',)
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
