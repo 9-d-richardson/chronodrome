@@ -37,7 +37,7 @@
     	{% if timeline.current_TL.header_image %}
     		<span class="search-thumbnail">
     			<a href="{% url 'timeline_detail' timeline.current_TL.pk %}">
-		    		{% thumbnail timeline.current_TL.header_image "150x150" upscale=False as im %}
+		    		{% thumbnail timeline.current_TL.header_image "150x150" upscale=False format="PNG" as im %}
 							<img class="timeline-image" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
 						{% endthumbnail %}
 					</a>

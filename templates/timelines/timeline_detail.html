@@ -45,7 +45,7 @@
 	{% if timeline.header_image %}
 		<div class="image">
 			<a href="{{ timeline.header_image.url }}">
-				{% thumbnail timeline.header_image "760x500" upscale=False as im %}
+				{% thumbnail timeline.header_image "760x500" upscale=False format="PNG" as im %}
 					<img class="timeline-image" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
 				{% endthumbnail %}
 			</a>
@@ -132,7 +132,7 @@
 	{% elif item.type == 'image' %}{% with item.item as image %}
 		<div class="image">
 			<a href="{{ image.image.url }}">
-				{% thumbnail image.image "760x500" upscale=False as im %}
+				{% thumbnail image.image "760x500" upscale=False format="PNG" as im %}
 					<img class="timeline-image" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
 				{% endthumbnail %}
 			</a>
