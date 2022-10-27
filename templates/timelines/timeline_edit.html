@@ -170,7 +170,7 @@
                 {% for error in image.image.errors %}
                   <p class="form-error-text">{{ error }}</p>
                 {% endfor %}
-                {% thumbnail image.image.value "250x250" upscale=False as im %}
+                {% thumbnail image.image.value "250x250" upscale=False format="PNG" as im %}
                   <img class="timeline-image" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
                 {% endthumbnail %}
                 <br>
