@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block title %}
+  Verification failed
+{% endblock title %}
+
+{% block content %}
+	<h1>403 - CSRF verification failed</h1>
+	<p class="form-error-text">Did you log out then log back in?</p>
+{% endblock content %}

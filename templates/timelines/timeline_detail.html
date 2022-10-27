@@ -54,12 +54,12 @@
 	<p>{{ timeline.description|linebreaks }}</p>
 </div>
 
-<div id="user-has-read">
+<div id="user-has-finished">
 	{% if user.is_authenticated %}
 		{% if user_has_finished_TL is True %}
 			<h3>Congratulations, you've finished this timeline!</h3>
 		{% else %}
-			<h3>You have finished {{ total_read }} out of 
+			<h3>You have finished {{ total_finished }} out of 
 				{{ total_entries }} entries in this timeline.</h3>
 		{% endif %}
 	{% else %}
@@ -74,7 +74,7 @@
 {% for item in items %}
 
 	{% if item.type == 'entry' %}{% with item.item as entry %}
-		<div id ="entry-{{ entry.pk }}" class="entry{% if item.user_has_read %} has-finished{% endif %}">
+		<div id ="entry-{{ entry.pk }}" class="entry{% if item.user_has_finished %} has-finished{% endif %}">
 			<li class="list-entry">
 				{% if entry.link != ''%}
 					<a href="{{ entry.link }}" target="_blank" rel="noopener noreferrer">
@@ -94,18 +94,18 @@
 			<blockquote>{{ entry.comment|linebreaks }}</blockquote>
 		
 			{% if user.is_authenticated %}
-				<form class="user-has-read-change" method="post">{% csrf_token %}
-					<div class="button-row" id="is-read-{{ entry.pk }}" {% if not item.user_has_read %}hidden{% endif %}>
-						<button type="submit" class="mark-as-unread" value="{{ entry.pk }}">
-							Mark as unread
+				<form class="user-has-finished-change" method="post">{% csrf_token %}
+					<div class="button-row" id="is-finished-{{ entry.pk }}" {% if not item.user_has_finished %}hidden{% endif %}>
+						<button type="submit" class="mark-as-unfinished" value="{{ entry.pk }}">
+							Mark as unfinished
 						</button>
 					</div>
-					<div class="button-row" id="is-unread-{{ entry.pk }}" {% if item.user_has_read %}hidden{% endif %}>
-						<button type="submit" class="mark-as-read" value="{{ entry.pk }}">
-							Mark as read
+					<div class="button-row" id="is-unfinished-{{ entry.pk }}" {% if item.user_has_finished %}hidden{% endif %}>
+						<button type="submit" class="mark-as-finished" value="{{ entry.pk }}">
+							Mark as finished
 						</button>
-						<button type="submit" class="mark-all-above-as-read" value="{{ entry.pk }}">
-							Mark all above as read
+						<button type="submit" class="mark-all-above-as-finished" value="{{ entry.pk }}">
+							Mark all above as finished
 						</button>
 					</div>
 				</form>

@@ -57,14 +57,6 @@ gray background in the input fields*/
 	outline-color: red;
 }
 
-.form-error-text {
-	color: red;
-	text-align: center;
-	margin: 0px;
-	font-weight: bold;
-	font-size: 1.15em;
-}
-
 /*Makes the divider form stand out for easier navigation*/
 .divider {
 	background-color: Wheat;

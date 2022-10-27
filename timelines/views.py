@@ -3,7 +3,7 @@ from django.contrib.auth.mixins import UserPassesTestMixin
 
 from django.shortcuts import get_object_or_404
 
-from .models import Timeline, Entry, Divider, Image, UserHasReadTracker
+from .models import Timeline, Entry, Divider, Image, UserHasFinishedTracker
 from accounts.models import CustomUser
 
 class TimelineDetailView(UserPassesTestMixin, TemplateView):
@@ -24,17 +24,17 @@ class TimelineDetailView(UserPassesTestMixin, TemplateView):
 		context['total_entries'] = total_entries
 
 		'''If user is logged in, finds or creates a list of which entries the 
-		user has marked as read, then checks if the user has finished the 
+		user has marked as finished, then checks if the user has finished the 
 		whole TL iff the TL has at least one entry'''
 		if self.request.user.is_authenticated:
-			tracker_object, created = UserHasReadTracker.objects.get_or_create(
+			tracker_object, created = UserHasFinishedTracker.objects.get_or_create(
 				user=self.request.user, timeline=timeline)
 			if not created:
 				tracker_object.save()
-			tracker = tracker_object.mark_as_read.all()
-			total_read = len(tracker)
-			context['total_read'] = total_read
-			context['user_has_finished_TL'] = (total_read == total_entries 
+			tracker = tracker_object.mark_as_finished.all()
+			total_finished = len(tracker)
+			context['total_finished'] = total_finished
+			context['user_has_finished_TL'] = (total_finished == total_entries 
 				and total_entries > 0)
 		else:
 			tracker = []
@@ -44,7 +44,7 @@ class TimelineDetailView(UserPassesTestMixin, TemplateView):
 		items = []
 		for entry in entries:
 			items.append({'item': entry, 'type': 'entry', 
-				'user_has_read': entry in tracker})
+				'user_has_finished': entry in tracker})
 		for divider in dividers:
 			is_blank = (divider.name == '' and divider.subheading == '' and 
 				divider.comment == '')

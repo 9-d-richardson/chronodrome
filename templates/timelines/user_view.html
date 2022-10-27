@@ -9,8 +9,7 @@
 	{% if finished_TLs %}
 		<p><b>{{ viewed_user }}</b> has finished
 			{% for timeline in finished_TLs %}
-				<a href="{% url 'timeline_detail' timeline.pk %}"><i>{{ timeline }}</i></a>{% if not forloop.last %}, {% endif %}
-			{% endfor %}.
+				<a href="{% url 'timeline_detail' timeline.pk %}"><i>{{ timeline }}</i></a>{% if not forloop.last %}, {% endif %}{% endfor %}.
 		</p>
 	{% endif %}
 	<hr>

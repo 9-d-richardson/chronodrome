@@ -149,7 +149,7 @@ class Image(models.Model):
 		ordering = ['position',]
 
 
-class UserHasReadTracker(models.Model):
+class UserHasFinishedTracker(models.Model):
 	user = models.ForeignKey(
 		CustomUser,
 		on_delete=models.CASCADE,
@@ -160,13 +160,13 @@ class UserHasReadTracker(models.Model):
 		on_delete=models.CASCADE,
 		related_name='timeline_tracker',
 	)
-	mark_as_read = models.ManyToManyField(Entry, blank=True)
+	mark_as_finished = models.ManyToManyField(Entry, blank=True)
 
 	def __str__(self):
 		return 'User: ' + str(self.user) + " TL: " + str(self.timeline)
 
 
-class UserHasReadEpisodeTracker(models.Model):
+class UserHasFinishedEpisodeTracker(models.Model):
 	user = models.ForeignKey(
 		CustomUser,
 		on_delete=models.CASCADE,
@@ -177,7 +177,7 @@ class UserHasReadEpisodeTracker(models.Model):
 		on_delete=models.CASCADE,
 		related_name='entry_tracker',
 	)
-	mark_as_read = models.ManyToManyField(Episode, blank=True)
+	mark_as_finished = models.ManyToManyField(Episode, blank=True)
 
 	def __str__(self):
 		return 'User: ' + str(self.user) + " Entry: " + str(self.entry)

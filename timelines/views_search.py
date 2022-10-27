@@ -7,7 +7,7 @@ from django.db.models import Q, Count
 from django.core.paginator import Paginator
 from django.db.models.functions import Lower
 
-from .models import Timeline, Entry, UserHasReadTracker
+from .models import Timeline, Entry, UserHasFinishedTracker
 from accounts.models import CustomUser
 
 TLs_per_page = 25
@@ -26,7 +26,7 @@ class TimelineSearchBase(TemplateView):
 	
 	'''
 	Takes the filtered timeline provided by the child class, and returns it
-	properly sorted, paginated, and with how many entries the user has read
+	properly sorted, paginated, and with how many entries the user has finished
 	'''
 	def return_final_search(self, timelines, sort, user, page):
 		timelines = self.sort_entries(timelines, sort)
@@ -55,15 +55,15 @@ class TimelineSearchBase(TemplateView):
 			total_entries = len(Entry.objects.filter(timeline=timeline))
 			timeline_dict['total_entries'] = total_entries
 			try:
-				tracker_object = UserHasReadTracker.objects.get(
+				tracker_object = UserHasFinishedTracker.objects.get(
 					user=user, timeline=timeline)
-				total_read = len(tracker_object.mark_as_read.all())
-				timeline_dict['total_read'] = total_read
+				total_finished = len(tracker_object.mark_as_finished.all())
+				timeline_dict['total_finished'] = total_finished
 			except:
-				total_read = 0
-				timeline_dict['total_read'] = total_read
+				total_finished = 0
+				timeline_dict['total_finished'] = total_finished
 			timeline_dict['user_has_finished'] = (
-				total_entries > 0 and total_read == total_entries)
+				total_entries > 0 and total_finished == total_entries)
 			timeline_dict['is_bookmarked'] = user in timeline.bookmarks.all()
 			TL_plus_entry_count.append(timeline_dict)
 		return TL_plus_entry_count
@@ -97,10 +97,10 @@ class UserDetailView(TimelineSearchBase):
 			total_entries = len(entries)
 			if total_entries > 0:
 				try:
-					tracker_object = UserHasReadTracker.objects.get(
+					tracker_object = UserHasFinishedTracker.objects.get(
 						user=viewed_user, timeline=timeline)
-					total_read = len(tracker_object.mark_as_read.all())
-					if total_read == total_entries:
+					total_finished = len(tracker_object.mark_as_finished.all())
+					if total_finished == total_entries:
 						finished_TLs.append(timeline)
 				except:
 					pass

@@ -29,6 +29,6 @@ urlpatterns = [
 	#Ajax pages
 	path('timelines/ajax/bookmark_change', 
 		views_ajax.bookmarkChange, name='bookmark_change'),
-	path('timelines/ajax/user_has_read_change', 
-		views_ajax.userHasReadChange, name='user_has_read_change'),
+	path('timelines/ajax/user_has_finished_change', 
+		views_ajax.userHasFinishedChange, name='user_has_finished_change'),
 ]
