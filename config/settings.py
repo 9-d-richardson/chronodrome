@@ -49,6 +49,9 @@ INSTALLED_APPS = [
     'accounts',
     'timelines',
     'management',
+
+    # Lets us upload to Amazon S3
+    'storages',
     # Creates thumbnails of images - https://github.com/jazzband/sorl-thumbnail
     'sorl.thumbnail', 
 ]
@@ -141,6 +144,19 @@ USE_I18N = True
 
 USE_TZ = True
 
+# Amazon S3 Info
+AWS_ACCESS_KEY_ID = env.str("AWS_S3_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = env.str("AWS_SECRET_ACCESS_KEY")
+AWS_STORAGE_BUCKET_NAME = 'chronodrome-media'
+AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+AWS_S3_OBJECT_PARAMETERS = {
+    'CacheControl': 'max-age=86400',
+}
+
+if DEBUG:
+    DEFAULT_FILE_STORAGE = 'config.storage_backends.DebugMediaStorage'
+else:
+    DEFAULT_FILE_STORAGE = 'config.storage_backends.MediaStorage'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
@@ -152,8 +168,8 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 # Upload folder
 
-MEDIA_ROOT =  str(BASE_DIR.joinpath('media'))
-MEDIA_URL = '/media/'
+# MEDIA_ROOT =  str(BASE_DIR.joinpath('media'))
+# MEDIA_URL = '/media/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field

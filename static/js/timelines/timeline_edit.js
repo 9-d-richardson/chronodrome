@@ -204,6 +204,7 @@ flagged as temporarily disabled */
 			}
 			itemToSwapWith = swapPartners.first();
 			if (itemToSwapWith.length) {
+				$('.user-form').addClass('changed-input');
 				parentForm.swap(itemToSwapWith, button)
 			}
 		}
