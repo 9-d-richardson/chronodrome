@@ -8,7 +8,7 @@ from accounts.models import CustomUser
 from config import shared_constants as s_c
 from config import shared_objects as s_o
 
-#Where to save images. Same folder for both, just accessed a different way
+# Where to save images. Same folder for both, just accessed a different way
 def header_image_directory_path(instance, filename):
 	return 'timeline_images/{0}/{1}'.format(instance.id, filename)
 def image_directory_path(instance, filename):
