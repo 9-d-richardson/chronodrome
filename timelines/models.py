@@ -1,4 +1,5 @@
 import copy
+import uuid
 
 from django.contrib.auth import get_user_model
 from django.db import models
@@ -8,11 +9,18 @@ from accounts.models import CustomUser
 from config import shared_constants as s_c
 from config import shared_objects as s_o
 
+
 # Where to save images. Same folder for both, just accessed a different way
 def header_image_directory_path(instance, filename):
-	return 'timeline_images/{0}/{1}'.format(instance.id, filename)
+	new_filename = str(uuid.uuid4().hex)
+	filetype = filename.split('.')[-1]
+	return 'timeline_images/{0}/{1}.{2}'.format(
+		instance.id, new_filename, filetype)
 def image_directory_path(instance, filename):
-	return 'timeline_images/{0}/{1}'.format(instance.timeline.id, filename)
+	new_filename = str(uuid.uuid4().hex)
+	filetype = filename.split('.')[-1]
+	return 'timeline_images/{0}/{1}.{2}'.format(
+		instance.timeline.id, new_filename, filetype)
 
 
 class Timeline(models.Model):

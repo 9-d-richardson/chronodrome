@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    #For deploying static files in production
+    # For deploying static files in production
     'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
 
@@ -50,7 +50,7 @@ INSTALLED_APPS = [
     'timelines',
     'management',
 
-    # Lets us upload to Amazon S3
+    # Manages uploads to Amazon S3 - https://github.com/jschneier/django-storages
     'storages',
     # Creates thumbnails of images - https://github.com/jazzband/sorl-thumbnail
     'sorl.thumbnail', 
@@ -160,14 +160,12 @@ else:
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
-
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [str(BASE_DIR.joinpath('static'))]
 STATIC_ROOT = STATIC_ROOT = str(BASE_DIR.joinpath('staticfiles'))
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage' 
 
 # Upload folder
-
 # MEDIA_ROOT =  str(BASE_DIR.joinpath('media'))
 # MEDIA_URL = '/media/'
 
