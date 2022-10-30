@@ -187,6 +187,11 @@ INTERNAL_IPS = [
     "127.0.0.1",
 ]
 
-
 # Allows for use of custom widgets
 FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
+
+#Some security settings
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+if not DEBUG:
+    SECURE_SSL_REDIRECT = True

@@ -49,8 +49,8 @@
       <label class="user-form-label">{{ timeline_form.title.label }}</label>{{ timeline_form.title }}
     </span>
     <span class="field">
-      {% thumbnail timeline_form.header_image.value "250x250" upscale=False as im %}
-        <img class="timeline-image" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+      {% thumbnail timeline_form.header_image.value "760x500" upscale=False as im %}
+        <img class="timeline-image timeline-edit-image" src="{{ im.url }}">
       {% endthumbnail %}
       <br>
       {% for error in timeline_form.header_image.errors %}
@@ -170,8 +170,8 @@
                 {% for error in image.image.errors %}
                   <p class="form-error-text">{{ error }}</p>
                 {% endfor %}
-                {% thumbnail image.image.value "250x250" upscale=False format="PNG" as im %}
-                  <img class="timeline-image" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+                {% thumbnail image.image.value "760x500" upscale=False format="PNG" as im %}
+                  <img class="timeline-image timeline-edit-image" src="{{ im.url }}">
                 {% endthumbnail %}
                 <br>
                 <label class="user-form-label">{{ image.image.label }}</label>{{ image.image }}
