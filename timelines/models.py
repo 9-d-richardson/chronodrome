@@ -183,18 +183,18 @@ class UserHasFinishedTracker(models.Model):
 		return 'User: ' + str(self.user) + " TL: " + str(self.timeline)
 
 
-class UserHasFinishedEpisodeTracker(models.Model):
-	user = models.ForeignKey(
-		CustomUser,
-		on_delete=models.CASCADE,
-		related_name='episode_tracker'
-	)
-	entry = models.ForeignKey(
-		Entry, 
-		on_delete=models.CASCADE,
-		related_name='entry_tracker',
-	)
-	mark_as_finished = models.ManyToManyField(Episode, blank=True)
+# class UserHasFinishedEpisodeTracker(models.Model):
+# 	user = models.ForeignKey(
+# 		CustomUser,
+# 		on_delete=models.CASCADE,
+# 		related_name='episode_tracker'
+# 	)
+# 	entry = models.ForeignKey(
+# 		Entry, 
+# 		on_delete=models.CASCADE,
+# 		related_name='entry_tracker',
+# 	)
+# 	mark_as_finished = models.ManyToManyField(Episode, blank=True)
 
-	def __str__(self):
-		return 'User: ' + str(self.user) + " Entry: " + str(self.entry)
+# 	def __str__(self):
+# 		return 'User: ' + str(self.user) + " Entry: " + str(self.entry)
