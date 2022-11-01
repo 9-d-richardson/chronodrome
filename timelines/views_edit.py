@@ -106,9 +106,12 @@ class TimelineEditView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 				entry_formset.save()
 				divider_formset.save()
 				image_formset.save()
-				messages.success(request, 'Timeline saved!')
-				return HttpResponseRedirect(reverse_lazy('timeline_detail', 
-					kwargs={"pk":timeline_form.instance.id}))
+				messages.success(request, 
+					'Timeline saved! Redirecting to your timeline now!')
+				return HttpResponseRedirect(reverse_lazy('timeline_saved', 
+				 	kwargs={"pk":timeline_form.instance.id}))
+				# return HttpResponseRedirect(reverse_lazy('timeline_detail', 
+				# 	kwargs={"pk":timeline_form.instance.id}))
 
 		messages.error(request, 'There were problems saving your timeline.')
 		context = self.assembleContext(timeline_form, entry_formset, 
@@ -204,3 +207,14 @@ class TimelineDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 	def test_func(self):
 		obj = self.get_object()
 		return obj.creator == self.request.user
+
+'''This page is just a redirect to the relevant timeline-detail page, so that 
+the success message pops up quickly even if it takes a few seconds for the
+TL's thumbnails to be created'''
+class TimelineSavedView(TemplateView):
+	template_name = "timelines/timeline_saved.html"
+
+	def get(self, request, *args, **kwargs):
+		messages.success(request, 'Timeline saved!')
+		return HttpResponseRedirect(reverse_lazy('timeline_detail', 
+			kwargs={"pk":self.kwargs['pk']}))

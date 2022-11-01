@@ -3,10 +3,14 @@ from django.contrib.auth.mixins import UserPassesTestMixin
 
 from django.shortcuts import get_object_or_404
 
+from hitcount.models import HitCount
+from hitcount.views import HitCountMixin
+from hitcount.utils import get_hitcount_model
+
 from .models import Timeline, Entry, Divider, Image, UserHasFinishedTracker
 from accounts.models import CustomUser
 
-class TimelineDetailView(UserPassesTestMixin, TemplateView):
+class TimelineDetailView(UserPassesTestMixin, TemplateView, HitCountMixin):
 	'''
 	Shows individual timelines as well as telling users whether or not
 	they've finished the whole timeline
@@ -22,6 +26,17 @@ class TimelineDetailView(UserPassesTestMixin, TemplateView):
 		total_entries = len(entries)
 		context['timeline'] = timeline
 		context['total_entries'] = total_entries
+
+		''' 
+		Adds a hit to the hitcount for this timeline, assuming it's a new 
+		session, etc. Simplified version of 
+		https://github.com/thornomad/django-hitcount/blob/master/hitcount/views.py 
+		'''
+		hit_count = get_hitcount_model().objects.get_for_object(timeline)
+		hits = hit_count.hits
+		hit_count_response = self.hit_count(self.request, hit_count)
+		if hit_count_response.hit_counted:
+			hits = hits + 1
 
 		'''If user is logged in, finds or creates a list of which entries the 
 		user has marked as finished, then checks if the user has finished the 

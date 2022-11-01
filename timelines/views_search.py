@@ -20,6 +20,13 @@ class TimelineSearchBase(TemplateView):
 	'''
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
+		context['sort_options'] = [
+			{'value': 'updated', 'text': 'Recently updated'},
+			{'value': 'created', 'text': 'Recently created'},
+			{'value': 'alpha', 'text': 'Alphabetical'},
+			{'value': 'views', 'text': 'Most viewed'},
+			{'value': 'bookmarks', 'text': 'Most bookmarked'},
+		]
 		context['page'] = self.request.GET.get('page', '')
 		context['sort'] = self.request.GET.get('sort', '')
 		return context
@@ -37,14 +44,19 @@ class TimelineSearchBase(TemplateView):
 
 	'''
 	Returns lists of timeline entries sorted in a particular way. Default is
-	by most recently updated
+	by most recently updated, so if that's the sort option we don't need to do
+	anything
 	'''
 	def sort_entries(self, timelines, sort):
-		if sort == 'alpha':
+		if sort == 'created':
+			timelines = timelines.order_by('-created')
+		elif sort == 'alpha':
 			timelines = timelines.order_by(Lower('title'))
 		elif sort == 'bookmarks':
 			timelines = timelines.annotate(total_bookmarks = Count(
 				'bookmarks')).order_by('-total_bookmarks')
+		elif sort == 'views':
+			timelines = timelines.order_by('hit_count_generic')
 		return timelines
 
 	#Counts how many entries per timeline the user has finished.  

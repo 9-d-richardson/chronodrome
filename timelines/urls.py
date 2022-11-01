@@ -1,4 +1,5 @@
 from django.urls import path
+
 from . import views, views_edit, views_search, views_ajax
 
 urlpatterns = [
@@ -23,6 +24,8 @@ urlpatterns = [
 		views_search.HiddenTimelinesView.as_view(), name='hidden_timelines'),
 	
 	# Other
+	path('timelines/<int:pk>/saved/',
+		views_edit.TimelineSavedView.as_view(), name='timeline_saved'),
 	path('timelines/<int:pk>/',
 		views.TimelineDetailView.as_view(), name='timeline_detail'),
 

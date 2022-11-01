@@ -6,31 +6,11 @@
 	<link rel="stylesheet" href="{% static 'css/search_base.css' %}">
 {% endblock styles %}
 {% block content %}
+	<!-- Whatever info the page needs to show above the search results -->
 	{% block top %}
 	{% endblock top %}
-	
-	<!-- From https://docs.djangoproject.com/en/4.0/topics/pagination/ -->
-	{% if page_obj %}
-		<div class="pagination">		
-      {% if page_obj.has_previous %}
-        <a href="?page=1{% if sort %}&sort={{ sort }}{% endif %}">&laquo; First</a>
-        <a href="?page={{ page_obj.previous_page_number }}{% if sort %}&sort={{ sort }}{% endif %}">Prev</a>
-      {% endif %}
-      Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
-      {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}{% if sort %}&sort={{ sort }}{% endif %}">Next</a>
-        <a href="?page={{ page_obj.paginator.num_pages }}{% if sort %}&sort={{ sort }}{% endif %}">Last &raquo;</a>
-      {% endif %}
-			<div class="sort-menu">
-				<label for="sort">Sort by:</label>
-				<select class="sort" name="sort" id="sort-top">
-				  <option value="updated">Recently updated</option>
-				  <option value="alpha">Alphabetical</option>
-				  <option value="bookmarks">Most bookmarked</option>
-				</select>
-			</div>
-		</div>
-	{% endif %}
+
+	{% include "widgets/pagination_bar.html" %}
 
 	{% for timeline in page_obj %}
     <div class="search-result{% if timeline.user_has_finished %} has-finished{% endif %}">
@@ -88,28 +68,8 @@
     {% endif %}
 	{% endfor %}
 
-	{% if page_obj %}
-		<br>
-		<div class="pagination">		
-      {% if page_obj.has_previous %}
-        <a href="?page=1{% if sort %}&sort={{ sort }}{% endif %}">&laquo; First</a>
-        <a href="?page={{ page_obj.previous_page_number }}{% if sort %}&sort={{ sort }}{% endif %}">Prev</a>
-      {% endif %}
-      Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
-      {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}{% if sort %}&sort={{ sort }}{% endif %}">Next</a>
-        <a href="?page={{ page_obj.paginator.num_pages }}{% if sort %}&sort={{ sort }}{% endif %}">Last &raquo;</a>
-      {% endif %}
-			<div class="sort-menu">
-				<label for="sort">Sort by:</label>
-				<select class="sort" name="sort" id="sort-bottom">
-				  <option value="updated">Recently updated</option>
-				  <option value="alpha">Alphabetical</option>
-				  <option value="bookmarks">Most bookmarked</option>
-				</select>
-			</div>
-		</div>
-	{% endif %}
+	<br>
+	{% include "widgets/pagination_bar.html" %}
 
 {% endblock content %}
 

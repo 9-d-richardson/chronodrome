@@ -4,6 +4,10 @@ import uuid
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.urls import reverse
+from django.contrib.contenttypes.fields import GenericRelation
+
+from hitcount.models import HitCountMixin
+from hitcount.settings import MODEL_HITCOUNT
 
 from accounts.models import CustomUser
 from config import shared_constants as s_c
@@ -23,7 +27,7 @@ def image_directory_path(instance, filename):
 		instance.timeline.id, new_filename, filetype)
 
 
-class Timeline(models.Model):
+class Timeline(models.Model, HitCountMixin):
 	title = models.CharField(max_length=s_c.CharFieldMaxLength)
 	header_image = models.ImageField(
 		upload_to=header_image_directory_path,
@@ -44,6 +48,11 @@ class Timeline(models.Model):
 		related_name='bookmarks'
 	)
 	hidden = models.BooleanField(default=False)
+	hit_count_generic = GenericRelation(
+		MODEL_HITCOUNT, 
+		object_id_field='object_pk',
+		related_query_name='hit_count_generic_relation'
+	)
 
 	class Meta:
 		ordering = ['-updated',]

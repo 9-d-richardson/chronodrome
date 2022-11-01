@@ -1,0 +1,23 @@
+<!-- Adds the pagination/sort bar which goes at the top/bottom of search_base.
+	From https://docs.djangoproject.com/en/4.0/topics/pagination/  -->
+{% if page_obj %}
+	<div class="pagination">		
+    {% if page_obj.has_previous %}
+      <a href="?page=1{% if sort %}&sort={{ sort }}{% endif %}">&laquo; First</a>
+      <a href="?page={{ page_obj.previous_page_number }}{% if sort %}&sort={{ sort }}{% endif %}">Prev</a>
+    {% endif %}
+    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+    {% if page_obj.has_next %}
+      <a href="?page={{ page_obj.next_page_number }}{% if sort %}&sort={{ sort }}{% endif %}">Next</a>
+      <a href="?page={{ page_obj.paginator.num_pages }}{% if sort %}&sort={{ sort }}{% endif %}">Last &raquo;</a>
+    {% endif %}
+		<div class="sort-menu">
+			<label for="sort">Sort by:</label>
+			<select class="sort" name="sort" id="sort-top">
+				{% for sort_option in sort_options %}
+					<option value="{{ sort_option.value }}">{{ sort_option.text }}</option>
+				{% endfor %}
+			</select>
+		</div>
+	</div>
+{% endif %}

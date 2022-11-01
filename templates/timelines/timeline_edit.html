@@ -48,16 +48,22 @@
       {% endfor %}
       <label class="user-form-label">{{ timeline_form.title.label }}</label>{{ timeline_form.title }}
     </span>
+
     <span class="field">
-      {% thumbnail timeline_form.header_image.value "760x500" upscale=False as im %}
-        <img class="timeline-image timeline-edit-image" src="{{ im.url }}">
-      {% endthumbnail %}
-      <br>
+      {% if timeline_form.header_image.value %}
+        {% thumbnail timeline_form.header_image.value "760x500" upscale=False as im %}
+          <img class="timeline-image timeline-edit-image" src="{{ im.url }}">
+        {% endthumbnail %}
+        <br>
+        <a href="{{ timeline_form.header_image.value.url }}" target="_blank">Current header image</a>
+        <br><br>
+      {% endif %}
       {% for error in timeline_form.header_image.errors %}
         <p class="form-error-text">{{ error }}</p>
       {% endfor %}
       <label class="user-form-label">{{ timeline_form.header_image.label }}</label>{{ timeline_form.header_image }}
     </span>
+
     <span class="field">
       {% for error in timeline_form.description.errors %}
         <p class="form-error-text">{{ error }}</p>
@@ -170,11 +176,20 @@
                 {% for error in image.image.errors %}
                   <p class="form-error-text">{{ error }}</p>
                 {% endfor %}
-                {% thumbnail image.image.value "760x500" upscale=False format="PNG" as im %}
-                  <img class="timeline-image timeline-edit-image" src="{{ im.url }}">
-                {% endthumbnail %}
-                <br>
-                <label class="user-form-label">{{ image.image.label }}</label>{{ image.image }}
+                {% if image.image.value %}
+                  {% thumbnail image.image.value "760x500" upscale=False format="PNG" as im %}
+                    <img class="timeline-image timeline-edit-image" src="{{ im.url }}">
+                  {% endthumbnail %}
+                  <br>
+                  <a href="{{ image.image.value.url }}" target="_blank">Current image</a>
+                  <br><br>
+                {% endif %}
+                {% if image.image.value %}
+                  <label class="user-form-label">Replace image:</label>
+                {% else %}
+                  <label class="user-form-label">Add image*:</label>
+                {% endif %}
+                {{ image.image }}
               </span>
               <span class="field">
                 {% for error in image.caption.errors %}

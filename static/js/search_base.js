@@ -22,15 +22,16 @@ $(function() {
 
 	/* Changes the default dropdown choice to what's in the paramaters iff
 	what's in the parameters is a valid choice */
-	var sortOptions = $("select#sort-top").children().map(function() {
+	var sortOptions = $("select").first().children().map(function() {
 		return this.value;
 	}).get();
 	if (sortOptions.includes(sort)) {
 		$("select.sort").val(sort)
 	}
 
-	// Handles the redirects for the top and bottom sort selectors. 
-	$('#sort-top,#sort-bottom').change(function() {
+	/* Redirects to a new search page sorted by whichever option the user chooses
+	in the dropdown menu. */
+	$('select').change(function() {
 		var $option = $(this).val();
 		var url = new URL(window.location.href);
 		url.searchParams.set('page', '1');

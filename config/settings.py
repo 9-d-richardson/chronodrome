@@ -50,10 +50,12 @@ INSTALLED_APPS = [
     'timelines',
     'management',
 
-    # Manages uploads to Amazon S3 - https://github.com/jschneier/django-storages
+    # Uploads media to Amazon S3 - https://github.com/jschneier/django-storages
     'storages',
     # Creates thumbnails of images - https://github.com/jazzband/sorl-thumbnail
     'sorl.thumbnail', 
+    # Counts views for timeline-detail - https://django-hitcount.readthedocs.io/
+    'hitcount',
 ]
 
 MIDDLEWARE = [
@@ -153,6 +155,9 @@ AWS_S3_OBJECT_PARAMETERS = {
     'CacheControl': 'max-age=86400',
 }
 
+''' These options save media files into different folders on S3 depending on
+whether debug is enabled, to prevent files from the test version from getting
+mixed up with files from production'''
 if DEBUG:
     DEFAULT_FILE_STORAGE = 'config.storage_backends.DebugMediaStorage'
 else:
@@ -165,10 +170,6 @@ STATICFILES_DIRS = [str(BASE_DIR.joinpath('static'))]
 STATIC_ROOT = STATIC_ROOT = str(BASE_DIR.joinpath('staticfiles'))
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage' 
 
-# Upload folder
-# MEDIA_ROOT =  str(BASE_DIR.joinpath('media'))
-# MEDIA_URL = '/media/'
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
@@ -176,8 +177,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
-LOGIN_REDIRECT_URL = 'home'
-LOGOUT_REDIRECT_URL = 'home'
+LOGIN_REDIRECT_URL = 'timeline_search'
+LOGOUT_REDIRECT_URL = 'timeline_search'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
@@ -195,6 +196,6 @@ CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
 if not DEBUG:
     SECURE_SSL_REDIRECT = True
-SECURE_HSTS_SECONDS = 60
+SECURE_HSTS_SECONDS = 2592000
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True

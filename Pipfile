@@ -13,6 +13,7 @@ environs = {extras = ["django"], version = "*"}
 psycopg2-binary = "*"
 boto3 = "*"
 django-storages = "*"
+django-hitcount = "*"
 
 [dev-packages]
 

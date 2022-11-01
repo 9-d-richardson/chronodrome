@@ -1,14 +1,16 @@
 <div class="image-field">
 	{% if widget.is_initial %}
-		{{ widget.initial_text }} <a href="{{ widget.value.url }}">{{ widget.value }}</a>
+			<!-- {{ widget.initial_text }} <a href="{{ widget.value.url }}" target="_blank">{{ widget.value }}</a> -->
+
 		{% if not widget.required %}
-			<br>
-			{{ widget.clear_checkbox_label }}
+			<label>Delete current image:</label>
 			<input type="checkbox" name="{{ widget.checkbox_name }}" id="{{ widget.checkbox_id }}"{% if widget.attrs.disabled %} disabled{% endif %}>		
+			<br>
 		{% endif %}
-		<br>
-		{{ widget.input_text }}
 	{% endif %}
 	<input type="{{ widget.type }}" name="{{ widget.name }}"{% include "django/forms/widgets/attrs.html" %}>
+	<button type="submit" class="remove-image">
+		Remove File
+	</button>
 </div>
 <br>

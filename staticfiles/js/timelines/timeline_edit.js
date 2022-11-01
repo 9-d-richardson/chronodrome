@@ -36,6 +36,13 @@ keeps the items marked for deletion properly hidden */
 		});
 	});
 
+/*Removes images that have been prepared for upload. Will have to rewrite this
+a bit if we make the form more complicated with extra divs. */
+	$(document).on('click', 'button.remove-image', function(e) {
+		e.preventDefault();
+		$(this).siblings('input[type="file"]').val(null);
+	});
+
 /* Gets the item number from the id of a given element such as a name field or
 delete button */
 	function getItemNumber(element) {
