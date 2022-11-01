@@ -1,0 +1,244 @@
+{% extends 'user_form_base.html' %}
+{% load static %}
+{% load thumbnail %}
+{% block title %}
+  {% if title != '' %}
+    Editing "{{ title }}"
+  {% else %}
+    Create new timeline
+  {% endif %}
+{% endblock title %}
+
+{% block content %}
+<div class="user-form {% if changed_input %}changed-input{% endif %}">
+  <b>
+    {% for error in entry_formset.non_form_errors %}
+      <p class="form-error-text">{{ error }}</p>
+    {% endfor %}
+    {% for error in divider_formset.non_form_errors %}
+      <p class="form-error-text">{{ error }}</p>
+    {% endfor %}
+    {% for error in image_formset.non_form_errors %}
+      <p class="form-error-text">{{ error }}</p>
+    {% endfor %}
+  </b>
+
+  {% if title != '' %}
+    <h1>Editing "{{ title }}"</h1>
+  {% else %}
+    <h1>Create new timeline</h1>
+    <p><i>Or <a href="{% url 'timeline_import' %}">import timeline</a></i></p>
+  {% endif %}
+  <noscript>
+    <p><b>Javascript is required for this page to work properly.</b></p>
+  </noscript>
+
+  <form class="timeline-edit-form" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ entry_formset.management_form }}
+    {{ divider_formset.management_form }}
+    {{ image_formset.management_form }}
+
+    <!-- Rendering each field manually like this is necessary in order to show
+    preview images. -->
+    <b>
+    <span class="field">
+      {% for error in timeline_form.title.errors %}
+        <p class="form-error-text">{{ error }}</p>
+      {% endfor %}
+      <label class="user-form-label">{{ timeline_form.title.label }}</label>{{ timeline_form.title }}
+    </span>
+
+    <span class="field">
+      {% if timeline_form.header_image.value %}
+        {% thumbnail timeline_form.header_image.value "760x500" upscale=False as im %}
+          <img class="timeline-image timeline-edit-image" src="{{ im.url }}">
+        {% endthumbnail %}
+        <br>
+        <a href="{{ timeline_form.header_image.value.url }}" target="_blank">Current header image</a>
+        <br>
+      {% endif %}
+      {% for error in timeline_form.header_image.errors %}
+        <p class="form-error-text">{{ error }}</p>
+      {% endfor %}
+      <label class="user-form-label">{{ timeline_form.header_image.label }}</label>{{ timeline_form.header_image }}
+    </span>
+
+    <span class="field">
+      {% for error in timeline_form.description.errors %}
+        <p class="form-error-text">{{ error }}</p>
+      {% endfor %}
+      <label class="user-form-label">{{ timeline_form.description.label }}</label>{{ timeline_form.description }}
+    </span>
+    <span class="field">
+      {% for error in timeline_form.hidden.errors %}
+        <p class="form-error-text">{{ error }}</p>
+      {% endfor %}
+      <label class="user-form-label">{{ timeline_form.hidden.label }}</label>{{ timeline_form.hidden }}
+      </b>
+      <i>{{ timeline_form.hidden.help_text|safe }}</i>
+    </span>
+    <br>
+    <a class="insert-entry-at-start" href="javascript:void(0)">Insert Entry</a> | 
+    <a class="insert-divider-at-start" href="javascript:void(0)">Insert Divider</a> | 
+    <a class="insert-image-at-start" href="javascript:void(0)">Insert Image</a> 
+    <br><br>
+
+    <!-- Where all the formsets for each item type go, mixed together. -->
+    <div class="formset">
+      {% for form in items %}
+        <div class="{{ form.type }}" id="id_{{ form.type }}-{{ form.count }}-div" {% if form.hidden %}hidden{% endif %}>
+          <h3 class="{{ form.type }}-header">
+            <a class="move-down" title="Move down" id="id_{{ form.type }}-{{ form.count }}-down" href="javascript:void(0)">▼</a>
+            <span class="{{ form.type }}-header-text">
+              {% if form.type == 'entry' %}
+                Entry {{ form.count|add:1 }}/{{ MaxNumEntries }}
+              {% elif form.type == 'divider' %}
+                Divider {{ form.count|add:1 }}/{{ MaxNumDividers }}
+              {% elif form.type == 'image' %}
+                Image {{ form.count|add:1 }}/{{ MaxNumImages }}
+              {% endif %}
+            </span>
+            <a class="move-up" title="Move up" id="id_{{ form.type }}-{{ form.count }}-up" href="javascript:void(0)">▲</a>
+          </h3>
+          
+          {% comment %}
+            <!-- This is much tidier than doing each field manually but also much slower, so oh well -->
+            {{ form.item }}
+          {% endcomment %}
+
+          {% for field in form.item.hidden_fields %}
+            {{ field }}
+          {% endfor %}
+          <b>
+            {% if form.type == 'entry' %}{% with form.item as entry %}
+              <span class="field">
+                {% for error in entry.name.errors %}
+                  <p class="form-error-text">{{ error }}</p>
+                {% endfor %}
+                <label class="user-form-label">{{ entry.name.label }}</label>{{ entry.name }}
+              </span>
+              <span class="field">
+              {% for error in entry.author.errors %}
+                <p class="form-error-text">{{ error }}</p>
+              {% endfor %}
+              <label class="user-form-label">{{ entry.author.label }}</label>{{ entry.author }}
+              </span>
+              <span class="field">
+                {% for error in entry.section.errors %}
+                  <p class="form-error-text">{{ error }}</p>
+                {% endfor %}
+                <label class="user-form-label">{{ entry.section.label }}</label>{{ entry.section }}
+              </span>
+              <span class="field">
+                {% for error in entry.date.errors %}
+                  <p class="form-error-text">{{ error }}</p>
+                {% endfor %}
+                <label class="user-form-label">{{ entry.date.label }}</label>{{ entry.date }}
+              </span>
+              <span class="field">
+                {% for error in entry.link.errors %}
+                  <p class="form-error-text">{{ error }}</p>
+                {% endfor %}
+                <label class="user-form-label">{{ entry.link.label }}</label>{{ entry.link }}
+              </span>
+              <span class="field">
+                {% for error in entry.comment.errors %}
+                  <p class="form-error-text">{{ error }}</p>
+                {% endfor %}
+                <label class="user-form-label">{{ entry.comment.label }}</label>{{ entry.comment }}
+              </span>
+            {% endwith %}
+
+            {% elif form.type == 'divider' %}{% with form.item as divider %}
+              <span class="field">
+                {% for error in divider.name.errors %}
+                  <p class="form-error-text">{{ error }}</p>
+                {% endfor %}
+                <label class="user-form-label">{{ divider.name.label }}</label>{{ divider.name }}
+              </span>
+              <span class="field">
+                {% for error in divider.subheading.errors %}
+                  <p class="form-error-text">{{ error }}</p>
+                {% endfor %}
+                <label class="user-form-label">{{ divider.subheading.label }}</label>{{ divider.subheading }}
+              </span>
+              <span class="field">
+                {% for error in divider.comment.errors %}
+                  <p class="form-error-text">{{ error }}</p>
+                {% endfor %}
+                <label class="user-form-label">{{ divider.comment.label }}</label>{{ divider.comment }}
+              </span>
+            {% endwith %}
+
+            {% elif form.type == 'image' %}{% with form.item as image %}
+              <span class="field">
+                {% for error in image.image.errors %}
+                  <p class="form-error-text">{{ error }}</p>
+                {% endfor %}
+                {% if image.image.value %}
+                  {% thumbnail image.image.value "760x500" upscale=False format="PNG" as im %}
+                    <img class="timeline-image timeline-edit-image" src="{{ im.url }}">
+                  {% endthumbnail %}
+                  <br>
+                  <a href="{{ image.image.value.url }}" target="_blank">Current image</a>
+                  <br>
+                {% endif %}
+                {% if image.image.value %}
+                  <label class="user-form-label">Replace image:</label>
+                {% else %}
+                  <label class="user-form-label">Add image*:</label>
+                {% endif %}
+                {{ image.image }}
+              </span>
+              <span class="field">
+                {% for error in image.caption.errors %}
+                  <p class="form-error-text">{{ error }}</p>
+                {% endfor %}
+                <label class="user-form-label">{{ image.caption.label }}</label>{{ image.caption }}
+              </span>
+            {% endwith %}{% endif %}
+          </b>
+
+          <br>
+          {% if form.type == 'entry' %}
+            <span class="episode-list-button">
+              <a class="show-episode-list" href="javascript:void(0)">Show Episode List</a> | 
+            </span>
+          {% endif %}
+          <a class="delete-{{ form.type }}" id="id_{{ form.type }}-{{ form.count }}-delete-button" href="javascript:void(0)">
+            Delete {{ form.type|capfirst }}
+          </a>
+          <br>
+          <a class="insert-entry" href="javascript:void(0)">Insert Entry</a> | 
+          <a class="insert-divider" href="javascript:void(0)">Insert Divider</a> | 
+          <a class="insert-image" href="javascript:void(0)">Insert Image</a> 
+          <br>
+        </div>
+        {% endfor %}
+    </div>      
+
+    <p>
+      <input name="save-timeline" type="submit" value="Save timeline">
+    </p>
+  </form>
+
+  {% for form in episode_items %}
+    <div class="{{ form.type }}" id="id_{{ form.type }}-{{ form.count }}-div" hidden>
+      {{ form }}
+    </div>
+  {% endfor %}
+
+</div>
+{% endblock content %}
+
+{% block scripts %}
+  {{ block.super }}
+  <script>
+    warnOfUnsavedChanges();
+    stopEnterFromSubmitting();
+    markFieldErrors();
+  </script>
+  <script src="{% static 'js/jquery.swap.js' %}"></script>
+  <script src="{% static 'js/timelines/timeline_edit.js' %}"></script>
+{% endblock scripts %}

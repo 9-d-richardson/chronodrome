@@ -39,45 +39,7 @@
     {{ divider_formset.management_form }}
     {{ image_formset.management_form }}
 
-    <!-- Rendering each field manually like this is necessary in order to show
-    preview images. -->
-    <b>
-    <span class="field">
-      {% for error in timeline_form.title.errors %}
-        <p class="form-error-text">{{ error }}</p>
-      {% endfor %}
-      <label class="user-form-label">{{ timeline_form.title.label }}</label>{{ timeline_form.title }}
-    </span>
-
-    <span class="field">
-      {% if timeline_form.header_image.value %}
-        {% thumbnail timeline_form.header_image.value "760x500" upscale=False as im %}
-          <img class="timeline-image timeline-edit-image" src="{{ im.url }}">
-        {% endthumbnail %}
-        <br>
-        <a href="{{ timeline_form.header_image.value.url }}" target="_blank">Current header image</a>
-        <br><br>
-      {% endif %}
-      {% for error in timeline_form.header_image.errors %}
-        <p class="form-error-text">{{ error }}</p>
-      {% endfor %}
-      <label class="user-form-label">{{ timeline_form.header_image.label }}</label>{{ timeline_form.header_image }}
-    </span>
-
-    <span class="field">
-      {% for error in timeline_form.description.errors %}
-        <p class="form-error-text">{{ error }}</p>
-      {% endfor %}
-      <label class="user-form-label">{{ timeline_form.description.label }}</label>{{ timeline_form.description }}
-    </span>
-    <span class="field">
-      {% for error in timeline_form.hidden.errors %}
-        <p class="form-error-text">{{ error }}</p>
-      {% endfor %}
-      <label class="user-form-label">{{ timeline_form.hidden.label }}</label>{{ timeline_form.hidden }}
-      </b>
-      <i>{{ timeline_form.hidden.help_text|safe }}</i>
-    </span>
+    {{ timeline_form }}
     <br>
     <a class="insert-entry-at-start" href="javascript:void(0)">Insert Entry</a> | 
     <a class="insert-divider-at-start" href="javascript:void(0)">Insert Divider</a> | 
@@ -101,104 +63,9 @@
             </span>
             <a class="move-up" title="Move up" id="id_{{ form.type }}-{{ form.count }}-up" href="javascript:void(0)">▲</a>
           </h3>
-          
-          {% comment %}
-            <!-- This is much tidier than doing each field manually but also much slower, so oh well -->
-            {{ form.item }}
-          {% endcomment %}
 
-          {% for field in form.item.hidden_fields %}
-            {{ field }}
-          {% endfor %}
-          <b>
-            {% if form.type == 'entry' %}{% with form.item as entry %}
-              <span class="field">
-                {% for error in entry.name.errors %}
-                  <p class="form-error-text">{{ error }}</p>
-                {% endfor %}
-                <label class="user-form-label">{{ entry.name.label }}</label>{{ entry.name }}
-              </span>
-              <span class="field">
-              {% for error in entry.author.errors %}
-                <p class="form-error-text">{{ error }}</p>
-              {% endfor %}
-              <label class="user-form-label">{{ entry.author.label }}</label>{{ entry.author }}
-              </span>
-              <span class="field">
-                {% for error in entry.section.errors %}
-                  <p class="form-error-text">{{ error }}</p>
-                {% endfor %}
-                <label class="user-form-label">{{ entry.section.label }}</label>{{ entry.section }}
-              </span>
-              <span class="field">
-                {% for error in entry.date.errors %}
-                  <p class="form-error-text">{{ error }}</p>
-                {% endfor %}
-                <label class="user-form-label">{{ entry.date.label }}</label>{{ entry.date }}
-              </span>
-              <span class="field">
-                {% for error in entry.link.errors %}
-                  <p class="form-error-text">{{ error }}</p>
-                {% endfor %}
-                <label class="user-form-label">{{ entry.link.label }}</label>{{ entry.link }}
-              </span>
-              <span class="field">
-                {% for error in entry.comment.errors %}
-                  <p class="form-error-text">{{ error }}</p>
-                {% endfor %}
-                <label class="user-form-label">{{ entry.comment.label }}</label>{{ entry.comment }}
-              </span>
-            {% endwith %}
-
-            {% elif form.type == 'divider' %}{% with form.item as divider %}
-              <span class="field">
-                {% for error in divider.name.errors %}
-                  <p class="form-error-text">{{ error }}</p>
-                {% endfor %}
-                <label class="user-form-label">{{ divider.name.label }}</label>{{ divider.name }}
-              </span>
-              <span class="field">
-                {% for error in divider.subheading.errors %}
-                  <p class="form-error-text">{{ error }}</p>
-                {% endfor %}
-                <label class="user-form-label">{{ divider.subheading.label }}</label>{{ divider.subheading }}
-              </span>
-              <span class="field">
-                {% for error in divider.comment.errors %}
-                  <p class="form-error-text">{{ error }}</p>
-                {% endfor %}
-                <label class="user-form-label">{{ divider.comment.label }}</label>{{ divider.comment }}
-              </span>
-            {% endwith %}
-
-            {% elif form.type == 'image' %}{% with form.item as image %}
-              <span class="field">
-                {% for error in image.image.errors %}
-                  <p class="form-error-text">{{ error }}</p>
-                {% endfor %}
-                {% if image.image.value %}
-                  {% thumbnail image.image.value "760x500" upscale=False format="PNG" as im %}
-                    <img class="timeline-image timeline-edit-image" src="{{ im.url }}">
-                  {% endthumbnail %}
-                  <br>
-                  <a href="{{ image.image.value.url }}" target="_blank">Current image</a>
-                  <br><br>
-                {% endif %}
-                {% if image.image.value %}
-                  <label class="user-form-label">Replace image:</label>
-                {% else %}
-                  <label class="user-form-label">Add image*:</label>
-                {% endif %}
-                {{ image.image }}
-              </span>
-              <span class="field">
-                {% for error in image.caption.errors %}
-                  <p class="form-error-text">{{ error }}</p>
-                {% endfor %}
-                <label class="user-form-label">{{ image.caption.label }}</label>{{ image.caption }}
-              </span>
-            {% endwith %}{% endif %}
-          </b>
+          <!-- Check widgets/form_template.html for how forms are rendered -->
+          {{ form.item }}
 
           <br>
           {% if form.type == 'entry' %}

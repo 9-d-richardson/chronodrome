@@ -11,6 +11,7 @@ gray background in the input fields*/
     display: inline-block;
     width: 150px;
     text-align: right;
+    vertical-align: top;
   }
 
 .user-form input[type=text], 
@@ -29,6 +30,7 @@ gray background in the input fields*/
 	border-style: solid;
 	border-width: thin;
 	text-align: left;
+	padding-right: 2px;
 }
 
 @media screen and (max-width: 750px) {

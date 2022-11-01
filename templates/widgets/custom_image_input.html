@@ -1,7 +1,5 @@
 <div class="image-field">
 	{% if widget.is_initial %}
-			<!-- {{ widget.initial_text }} <a href="{{ widget.value.url }}" target="_blank">{{ widget.value }}</a> -->
-
 		{% if not widget.required %}
 			<label>Delete current image:</label>
 			<input type="checkbox" name="{{ widget.checkbox_name }}" id="{{ widget.checkbox_id }}"{% if widget.attrs.disabled %} disabled{% endif %}>		

@@ -183,7 +183,7 @@ class UserHasFinishedTracker(models.Model):
 		return 'User: ' + str(self.user) + " TL: " + str(self.timeline)
 
 
-# class UserHasReadEpisodeTracker(models.Model):
+# class UserHasFinishedEpisodeTracker(models.Model):
 # 	user = models.ForeignKey(
 # 		CustomUser,
 # 		on_delete=models.CASCADE,
