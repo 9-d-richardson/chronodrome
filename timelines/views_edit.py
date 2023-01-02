@@ -1,5 +1,4 @@
-from urllib.parse import urlparse
-from PIL import Image 
+import uuid
 
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic.base import TemplateView
@@ -7,15 +6,17 @@ from django.views.generic.edit import DeleteView
 
 from django.urls import reverse_lazy
 from django.shortcuts import get_object_or_404, render
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.db import IntegrityError, transaction
 from django.contrib import messages
 
 from .models import Timeline, Entry, Episode, Divider, Image
 from .forms import (TimelineForm, EntryForm, EntryFormSet, ImportForm, 
-	DividerForm, DividerFormSet, ImageForm,	ImageFormSet, ImportEpisodesFormSet)
+	DividerForm, DividerFormSet, ImageForm,	ImageFormSet, EpisodeFormSet, 
+	ImportEpisodesFormSet)
 
 from config import shared_constants as s_c
+
 
 class TimelineImportView(LoginRequiredMixin, TemplateView):
 	"""
@@ -80,10 +81,13 @@ class TimelineEditView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 		entry_formset = EntryFormSet(instance=timeline)
 		divider_formset = DividerFormSet(instance=timeline)
 		image_formset = ImageFormSet(instance=timeline)
-		# import_episodes_formset = ImportEpisodesFormSet()
+		episode_formset = EpisodeFormSet(instance=timeline)
+		import_episodes_formset = ImportEpisodesFormSet(prefix='importepisodes')
 
-		return self.assembleContext(timeline_form, entry_formset, 
-			divider_formset, image_formset)
+		context = self.assembleContext(timeline_form, entry_formset, 
+			divider_formset, image_formset, episode_formset, 
+			import_episodes_formset)
+		return context
 
 	def post(self, request, *args, **kwargs):
 		data = request.POST 
@@ -96,26 +100,48 @@ class TimelineEditView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 		entry_formset = EntryFormSet(instance=timeline, data=data)
 		divider_formset = DividerFormSet(instance=timeline, data=data)
 		image_formset = ImageFormSet(instance=timeline, data=data, files=files)
+		episode_formset = EpisodeFormSet(instance=timeline, data=data)
+		import_episodes_formset = ImportEpisodesFormSet(data=data, 
+			prefix='importepisodes')
 
 		if (timeline_form.is_bound and timeline_form.is_valid() and 
 			entry_formset.is_bound and entry_formset.is_valid() and 
 			divider_formset.is_bound and divider_formset.is_valid() and 
-			image_formset.is_bound and image_formset.is_valid()):
+			image_formset.is_bound and image_formset.is_valid() and 
+			episode_formset.is_bound and episode_formset.is_valid() and 
+			import_episodes_formset.is_bound and import_episodes_formset.is_valid()):
 			with transaction.atomic():
 				timeline_form.save()
 				entry_formset.save()
 				divider_formset.save()
 				image_formset.save()
+				episode_formset.save()
+
+				imported_episodes = []
+				for import_formset in import_episodes_formset.cleaned_data:
+					if not import_formset['DELETE']:
+						position = import_formset['position']
+						position_episode = 0
+						for name in import_formset['import_episodes_form']:
+							episode = Episode(
+								timeline=timeline, 
+								name=name[:s_c.CharFieldMaxLength], 
+								position=position,
+								position_episode=position_episode
+							)
+							imported_episodes.append(episode)
+							position_episode += 1
+				Episode.objects.bulk_create(imported_episodes)
+
 				messages.success(request, 
 					'Timeline saved! Redirecting to your timeline now!')
-				return HttpResponseRedirect(reverse_lazy('timeline_saved', 
-				 	kwargs={"pk":timeline_form.instance.id}))
-				# return HttpResponseRedirect(reverse_lazy('timeline_detail', 
-				# 	kwargs={"pk":timeline_form.instance.id}))
+				return HttpResponseRedirect(reverse_lazy('timeline_detail', 
+					kwargs={"pk":timeline_form.instance.id}))
 
 		messages.error(request, 'There were problems saving your timeline.')
 		context = self.assembleContext(timeline_form, entry_formset, 
-			divider_formset, image_formset)
+			divider_formset, image_formset, episode_formset, 
+			import_episodes_formset)
 		context['changed_input'] = True
 		return render(self.request, self.template_name, context)
 
@@ -131,20 +157,22 @@ class TimelineEditView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 	which are shared by get_context_data and post
 	'''
 	def assembleContext(self, timeline_form, entry_formset, divider_formset, 
-		image_formset):
+		image_formset, episode_formset, import_episodes_formset):
 		context = {}
 		context['timeline_form'] = timeline_form
 		context['title'] = timeline_form['title'].value()
 		context['entry_formset'] = entry_formset
 		context['divider_formset'] = divider_formset
 		context['image_formset'] = image_formset
+		context['episode_formset'] = episode_formset
+		context['import_episodes_formset'] = import_episodes_formset
 		context['items'] = self.assembleTimelineItems(entry_formset, 
-			divider_formset, image_formset)
-		# context['episode_items'] = self.assembleTimelineEpisodes(
-		# 	import_episodes_formset)
+			divider_formset, image_formset, episode_formset, 
+			import_episodes_formset)
 		context['MaxNumEntries'] = s_c.MaxNumEntries
 		context['MaxNumDividers'] = s_c.MaxNumDividers
 		context['MaxNumImages'] = s_c.MaxNumImages
+		context['MaxEpsPerEntry'] = s_c.MaxEpsPerEntry
 		return context
 
 	''' 
@@ -157,43 +185,96 @@ class TimelineEditView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 	of the same type only.
 	'''
 	def assembleTimelineItems(self, entry_formset, divider_formset, 
-		image_formset):
+		image_formset, episode_formset, import_episodes_formset):
+		episode_lists = {}
+		for episode in episode_formset:
+			pos = episode['position'].value()
+			if pos not in episode_lists:
+				episode_lists[pos] = [episode]
+			else:
+				episode_lists[pos].append(episode)
+
 		items = []
 		for i, entry in enumerate(entry_formset):
-			items.append({'item': entry, 'type': 'entry', 'count': i})
+			pos = entry['position'].value()
+			if pos in episode_lists:
+				'''Checks for errors so that any episode lists which have 
+				episodes with errors (and that aren't marked to be deleted) can
+				be properly displayed by timeline_edit'''
+				has_errors = False
+				for episode in episode_lists[pos]:
+					if episode.errors and not episode['DELETE'].value() == 'true':
+						has_errors = True
+						break
+				'''Sorts the episodes in case timeline_edit has been reloaded
+				due to an error, which can cause the episodes to get jumbled.'''
+				sorted_episode_list = sorted(episode_lists[pos], 
+					key=lambda episode: episode['position_episode'].value())
+				episode_dict = {
+					'episodes': sorted_episode_list,
+					'total_episodes': len(episode_lists[pos]),
+					'has_episodes': True,
+					'has_errors': has_errors,
+				}
+			else:
+				episode_dict = {
+					'episodes': [],
+					'has_episodes': False,
+				}
+			items.append({'item': entry, 'type': 'entry', 
+				'episode_dict': episode_dict})
 		for i, divider in enumerate(divider_formset):
-			items.append({'item': divider, 'type': 'divider', 'count': i})
+			items.append({'item': divider, 'type': 'divider'})
 		for i, image in enumerate(image_formset):
-			items.append({'item': image, 'type': 'image', 'count': i})
+			items.append({'item': image, 'type': 'image'})
 		items = sorted(items, key=lambda item: item['item']['position'].value())
+
+		''' We have to do these counters in order to properly display the 
+		header numbering for each item. For example, "Entry 1/100". We have to
+		add the counters to each item after the whole list has been sorted, 
+		because otherwise the counters can be in the wrong order '''
+		entry_counter, divider_counter, image_counter = 0, 0, 0
+		for item in items:
+			if item['type'] == 'entry':
+				item['counter'] = entry_counter
+				entry_counter += 1
+			if item['type'] == 'divider':
+				item['counter'] = divider_counter
+				divider_counter += 1
+			if item['type'] == 'image':
+				item['counter'] = image_counter
+				image_counter += 1
+
+		for import_form in import_episodes_formset:
+			position = int(import_form['position'].value())
+			marked_for_deletion = import_form['DELETE'].value() == 'true'
+			import_form_dict = {
+				'import_form': import_form,
+				'marked_for_deletion': marked_for_deletion
+			}
+			items[position]['import_form_dict'] = import_form_dict
+
+		''' Adds empty forms to the end of the list of forms, so that the JS
+		will have blank forms to copy when the user adds items to the TL '''
 		items.append({
 			'item': entry_formset.empty_form, 
 			'type': 'entry', 
-			'count': s_c.extra_form_position,
+			'counter': s_c.extra_form_position,
 			'hidden': True
 		})
 		items.append({
 			'item': divider_formset.empty_form, 
 			'type': 'divider', 
-			'count': s_c.extra_form_position,
+			'counter': s_c.extra_form_position,
 			'hidden': True
 		})
 		items.append({
 			'item': image_formset.empty_form, 
 			'type': 'image', 
-			'count': s_c.extra_form_position,
+			'counter': s_c.extra_form_position,
 			'hidden': True
 		})
 		return items
-
-	# def assembleTimelineEpisodes(self, import_episodes_formset):
-	# 	episode_items = []
-	# 	episode_items.append({
-	# 		'item': import_episodes_formset.empty_form, 
-	# 		'type': 'import-episodes', 
-	# 		'position': s_c.extra_form_position,
-	# 	})
-	# 	return episode_items
 
 
 class TimelineDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
@@ -207,14 +288,3 @@ class TimelineDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 	def test_func(self):
 		obj = self.get_object()
 		return obj.creator == self.request.user
-
-'''This page is just a redirect to the relevant timeline-detail page, so that 
-the success message pops up quickly even if it takes a few seconds for the
-TL's thumbnails to be created'''
-class TimelineSavedView(TemplateView):
-	template_name = "timelines/timeline_saved.html"
-
-	def get(self, request, *args, **kwargs):
-		messages.success(request, 'Timeline saved!')
-		return HttpResponseRedirect(reverse_lazy('timeline_detail', 
-			kwargs={"pk":self.kwargs['pk']}))

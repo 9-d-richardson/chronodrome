@@ -101,3 +101,22 @@ div.image {
   }
 }
 
+.episode-list-div {
+  border-style: solid;
+  padding: 5px;
+  margin-bottom: 5px;
+}
+
+.episode-text {
+  font-size: 1em;
+}
+
+button.episode-button {
+  font-size: .75em;
+}
+
+/* Ensures that the mark episode as finished/unfinished buttons appear
+on the same line as the episode text */
+.user-has-finished-ep-change {
+  display: inline-block;
+}

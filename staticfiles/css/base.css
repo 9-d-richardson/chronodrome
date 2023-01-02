@@ -4,6 +4,11 @@
   font-family: Times New Roman, Serif;
 }
 
+/* For centering anything that requires it */
+.center {
+	text-align: center;
+}
+
 button, select, input, textarea, option {
 	font-family: Arial, sans-serif;
 }
@@ -14,6 +19,14 @@ body {
 
 p, li {
 	font-size: 1.25em;
+}
+
+/* helper-text is for stuff like edit or hide/show buttons, where the text
+can be smaller than normal */
+p.helper-text {
+	font-size: 1em;
+	margin-top: 5px;
+	margin-bottom: 5px;
 }
 
 h1, h2, h3 {

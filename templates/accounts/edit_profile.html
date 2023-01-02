@@ -9,7 +9,7 @@
   	{% csrf_token %}
   	{{ form }}
     <p>
-    	<button name="user-form" type="submit">Submit</button>
+      <input name="edit-profile" type="submit" value="Submit">
     </p>
   </form>
   <hr>
@@ -27,5 +27,6 @@
     warnOfUnsavedChanges();
     stopEnterFromSubmitting();
     markFieldErrors();
+    preventDoubleSubmissions();
   </script>
 {% endblock scripts %}

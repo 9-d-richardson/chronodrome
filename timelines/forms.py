@@ -5,14 +5,7 @@ from .models import Timeline, Entry, Episode, Divider, Image
 from config import shared_constants as s_c
 from config import shared_objects as s_o
 
-# Fields that are shared between one or more types of items
-required_name_field = forms.CharField(
-	max_length=s_c.CharFieldMaxLength, 
-	label="Name*:",
-	error_messages={
-		'required': 'Each entry needs a name.',
-	}
-)
+### Fields that are shared between two or more types of items ###
 date_field = forms.CharField(
 	max_length=s_c.CharFieldMaxLength,
 	widget=forms.TextInput(attrs={
@@ -20,6 +13,16 @@ date_field = forms.CharField(
 	}),
 	required=False,
 	label="Date:"
+)
+link_field = forms.URLField(
+	widget=forms.TextInput(attrs={
+		'placeholder': 'E.g. link to a preferred edition', 
+	}),
+	required=False,
+	label="Link:",
+	error_messages={
+		'invalid': 'This URL is invalid.',
+	}
 )
 comment_field = forms.CharField(
 	max_length=s_c.TextFieldMaxLength,
@@ -67,12 +70,19 @@ class TimelineForm(s_o.CustomModelForm):
 	)
 
 
+### FORMS FOR TIMELINE ITEMS ###
 class EntryForm(s_o.CustomModelForm):
 	class Meta:
 		model = Entry
 		fields = ['name', 'author', 'section', 'date', 'link', 'comment', 
 			'position',]
-	name = required_name_field
+	name = forms.CharField(
+		max_length=s_c.CharFieldMaxLength, 
+		label="Name*:",
+		error_messages={
+			'required': 'Each entry needs a name.',
+		}
+	)
 	author = forms.CharField(
 		max_length=s_c.CharFieldMaxLength,
 		required=False,
@@ -87,16 +97,7 @@ class EntryForm(s_o.CustomModelForm):
 		label="Section:"
 	)
 	date = date_field
-	link = forms.URLField(
-		widget=forms.TextInput(attrs={
-			'placeholder': 'E.g. link to a preferred edition', 
-		}),
-		required=False,
-		label="Link:",
-		error_messages={
-			'invalid': 'This URL is invalid.',
-		}
-	)
+	link = link_field
 	comment = comment_field
 	position = position_field
 
@@ -141,46 +142,24 @@ class ImageForm(s_o.CustomModelForm):
 	position = position_field
 
 
-class BaseItemFormSet(forms.BaseInlineFormSet):
-	deletion_widget = forms.HiddenInput
+class EpisodeForm(s_o.CustomModelForm):
+	class Meta:
+		model = Episode
+		fields = ['name', 'date', 'link', 'position', 'position_episode']
+	name = forms.CharField(
+		max_length=s_c.CharFieldMaxLength, 
+		label="Name*:",
+		error_messages={
+			'required': 'Each episode needs a name.',
+		}
+	)
+	date = date_field
+	link = link_field
+	position = position_field
+	position_episode = position_field
 
 
-EntryFormSet = forms.inlineformset_factory(
-	Timeline, 
-	Entry, 
-	form=EntryForm, 
-	formset=BaseItemFormSet,
-	max_num=s_c.MaxNumEntries, 
-	validate_max=True,
-	extra=0, 
-	can_delete=True, 
-)
-
-
-DividerFormSet = forms.inlineformset_factory(
-	Timeline, 
-	Divider, 
-	form=DividerForm, 
-	formset=BaseItemFormSet,
-	max_num=s_c.MaxNumDividers, 
-	validate_max=True,
-	extra=0, 
-	can_delete=True, 
-)
-
-
-ImageFormSet = forms.inlineformset_factory(
-	Timeline, 
-	Image, 
-	form=ImageForm, 
-	formset=BaseItemFormSet,
-	max_num=s_c.MaxNumImages, 
-	validate_max=True,
-	extra=0, 
-	can_delete=True, 
-)
-
-
+### IMPORT FORMS ###
 class ImportForm(forms.Form):
 	template_name = "widgets/form_template.html"
 	import_form = forms.CharField(
@@ -203,39 +182,85 @@ class ImportForm(forms.Form):
 		return filtered_data
 
 
-class EpisodeForm(s_o.CustomModelForm):
-	class Meta:
-		model = Episode
-		fields = ['name', 'date','position',]
-	name = required_name_field
-	date = date_field
-	position = position_field
-
-
 class ImportEpisodesForm(forms.Form):
+	template_name = "widgets/form_template.html"
 	import_episodes_form = forms.CharField(
 		label='List of episodes*:',
 		widget=forms.Textarea(attrs={
 			'rows': s_c.TextAreaRows,
-			'placeholder': 'For example, list episodes of a TV season or ' +
-				'comic book issues. Each line of text will become a new ' +
-				'episode/issue.'
 		}),
 	)
+	position = position_field
 
 	def clean_import_episodes_form(self):
 		data = self.cleaned_data['import_episodes_form']
 		split_data = data.split('\r\n')
 		filtered_data = [line for line in split_data if line.strip() != ""]
-		if len(filtered_data) > 100:
-			raise ValidationError("Too many lines (max 100)")
+		num_lines = len(filtered_data)
+		if num_lines > s_c.MaxEpsPerEntry:
+			raise ValidationError("Too many lines: " + str(num_lines) + '/' + 
+				str(s_c.MaxEpsPerEntry) + '.')
 		return filtered_data
 
-ImportEpisodesFormSet = forms.formset_factory(ImportEpisodesForm, extra=0)
 
+### FORMSETS ###
+# Modifies the normal formset class so that the delete button is hidden
+class BaseItemFormSet(forms.BaseFormSet):
+	deletion_widget = forms.HiddenInput
 
-EpisodeFormSet = forms.modelformset_factory(
+# Modifies the normal inline formset class so that the delete button is hidden
+class BaseItemInlineFormSet(forms.BaseInlineFormSet):
+	deletion_widget = forms.HiddenInput
+
+EntryFormSet = forms.inlineformset_factory(
+	Timeline, 
+	Entry, 
+	form=EntryForm, 
+	formset=BaseItemInlineFormSet,
+	max_num=s_c.MaxNumEntries, 
+	validate_max=True,
+	extra=0, 
+	can_delete=True, 
+)
+
+DividerFormSet = forms.inlineformset_factory(
+	Timeline, 
+	Divider, 
+	form=DividerForm, 
+	formset=BaseItemInlineFormSet,
+	max_num=s_c.MaxNumDividers, 
+	validate_max=True,
+	extra=0, 
+	can_delete=True, 
+)
+
+ImageFormSet = forms.inlineformset_factory(
+	Timeline, 
+	Image, 
+	form=ImageForm, 
+	formset=BaseItemInlineFormSet,
+	max_num=s_c.MaxNumImages, 
+	validate_max=True,
+	extra=0, 
+	can_delete=True, 
+)
+
+EpisodeFormSet = forms.inlineformset_factory(
+	Timeline, 
 	Episode, 
 	form=EpisodeForm, 
-	fields=('name', 'date')
+	formset=BaseItemInlineFormSet,
+	max_num=10000, 
+	validate_max=True,
+	extra=0, 
+	can_delete=True, 
+)
+
+ImportEpisodesFormSet = forms.formset_factory(
+	ImportEpisodesForm, 
+	formset=BaseItemFormSet,
+	max_num=s_c.MaxNumEntries, 
+	validate_max=True,
+	extra=0,
+	can_delete=True,
 )

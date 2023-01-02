@@ -1,46 +1,49 @@
 {% for field in form.hidden_fields %}
   {{ field }}
 {% endfor %}
-{{ field.widget.input_type }}
 
 {% for field in form.visible_fields %}
-  <b>
-  {% if field.field.widget.input_type == 'file' %}
+  {% comment %}
+    <!-- Shows preview image if the field is an image. (Technically any file 
+    upload would count, but that doesn't matter since we're not planning on 
+    letting users upload anything other than images.) -->
+  {% endcomment %}
+  {% if field.field.widget.input_type == 'file' and field.value %}
     {% load thumbnail %}
-    {% if field.value %}
-      {% thumbnail field.value "760x500" upscale=False as im %}
-        <img class="timeline-image timeline-edit-image" src="{{ im.url }}">
-      {% endthumbnail %}
-      <br>
-      <a href="{{ field.value.url }}" target="_blank">Current header image</a>
-      <br>
-    {% endif %}
+    {% thumbnail field.value "760x500" upscale=False as im %}
+      <img class="timeline-image timeline-edit-image" src="{{ im.url }}">
+    {% endthumbnail %}
+    <br>
+    <b><a href="{{ field.value.url }}" target="_blank">Current image</a></b>
+    <br>
   {% endif %}
-  <span class="field">
-      {% if field.errors %}
-        {% for error in field.errors %}
-          <p class="form-error-text">{{ error }}</p>
-        {% endfor %}
-      {% endif %}
 
+  <div class="field">
+    {% if field.errors %}
+      {% for error in field.errors %}
+        <p class="form-error-text">{{ error }}</p>
+      {% endfor %}
+    {% endif %}
+    {% comment %}
       <!-- If this field is a required image, then the label is changed from
       the default, depending on whether or not the field has preexisting
       data. Otherwise it defaults to normal. -->
-      <label class="user-form-label">
-        {% if field.field.widget.input_type == 'file' and field.field.required %}
-          {% if field.value %}
-            Replace image:
-          {% else %}
-            Add image*:
-          {% endif %}
+    {% endcomment %}
+    <label class="user-form-label">
+      {% if field.field.widget.input_type == 'file' and field.field.required %}
+        {% if field.value %}
+          Replace image:
         {% else %}
-          {{ field.label }}
+          Add image*:
         {% endif %}
-      </label>
-      {{ field }}
-    </b>
+      {% else %}
+        {{ field.label }}
+      {% endif %}
+    </label>
+
+    {{ field }}
     {% if field.help_text %}
       <i>{{ field.help_text|safe }}</i>
     {% endif %}
-  </span>
+  </div>
 {% endfor %}

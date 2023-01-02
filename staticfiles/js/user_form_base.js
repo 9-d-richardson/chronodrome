@@ -15,10 +15,6 @@ function stopEnterFromSubmitting() {
 	});
 };
 
-function stopMultipleSubmissions(){
-	
-}
-
 /* Check for unsaved changes and warns if you navigate away without saving. It
 doesn't warn about any blank entries the user has added but that's fine. */
 function warnOfUnsavedChanges() {
@@ -50,3 +46,31 @@ function markFieldErrors() {
 		}
 	}) 
 }
+
+/*Disables the submission button after the first click. Hopefully a temporary 
+solution until a better idempotency approach is implemented */
+function preventDoubleSubmissions() {
+	$('form:not([action="/search/"])').submit(function() {
+		$('input[type="submit"]').attr("disabled", true);
+	})
+}
+
+// If implemented, these two functions will help prevent multiple submissions
+// function getIdempotencyKey() {
+// 	return $('input[name="IDEMPOTENCY_KEY"]').val()
+// }
+
+// function checkIdempotencyKey(idempotency_key, callback) {
+// 	$.ajax({
+// 		type: 'GET',
+// 		url: '/accounts/ajax/is_field_taken',
+// 		async: false,
+// 		data: {'idempotency_key': idempotency_key},
+// 		success: function(response) {
+// 			callback(response['valid']);
+// 		},
+// 		error: function(response) {
+// 			console.log(response);
+// 		}
+// 	});
+// }

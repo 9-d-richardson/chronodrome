@@ -7,7 +7,8 @@ from hitcount.models import HitCount
 from hitcount.views import HitCountMixin
 from hitcount.utils import get_hitcount_model
 
-from .models import Timeline, Entry, Divider, Image, UserHasFinishedTracker
+from .models import (Timeline, Entry, Divider, Image, Episode, 
+	UserHasFinishedTracker)
 from accounts.models import CustomUser
 
 class TimelineDetailView(UserPassesTestMixin, TemplateView, HitCountMixin):
@@ -23,6 +24,7 @@ class TimelineDetailView(UserPassesTestMixin, TemplateView, HitCountMixin):
 		entries = Entry.objects.filter(timeline=self.kwargs['pk'])
 		dividers = Divider.objects.filter(timeline=self.kwargs['pk'])
 		images = Image.objects.filter(timeline=self.kwargs['pk'])
+		episodes = Episode.objects.filter(timeline=self.kwargs['pk'])
 		total_entries = len(entries)
 		context['timeline'] = timeline
 		context['total_entries'] = total_entries
@@ -47,6 +49,7 @@ class TimelineDetailView(UserPassesTestMixin, TemplateView, HitCountMixin):
 			if not created:
 				tracker_object.save()
 			tracker = tracker_object.mark_as_finished.all()
+			ep_tracker = tracker_object.mark_ep_as_finished.all()
 			total_finished = len(tracker)
 			context['total_finished'] = total_finished
 			context['user_has_finished_TL'] = (total_finished == total_entries 
@@ -58,8 +61,11 @@ class TimelineDetailView(UserPassesTestMixin, TemplateView, HitCountMixin):
 		template needs, then sorts it by position'''
 		items = []
 		for entry in entries:
+			entry_pos = entry.position
 			items.append({'item': entry, 'type': 'entry', 
-				'user_has_finished': entry in tracker})
+				'user_has_finished': entry in tracker, 
+				'matching_eps_dict': self.assembleEpisodeList(episodes, 
+					ep_tracker, entry_pos)})
 		for divider in dividers:
 			is_blank = (divider.name == '' and divider.subheading == '' and 
 				divider.comment == '')
@@ -72,6 +78,21 @@ class TimelineDetailView(UserPassesTestMixin, TemplateView, HitCountMixin):
 		context['items'] = items
 		context['has_edit_permissions'] = timeline.creator == self.request.user
 		return context
+
+	def assembleEpisodeList(self, episodes, ep_tracker, entry_pos):
+		episodes = episodes.filter(position=entry_pos)
+		matching_eps = []
+		finished_episodes_count = 0
+		for episode in episodes:
+			user_has_finished = episode in ep_tracker
+			if user_has_finished:
+				finished_episodes_count += 1
+			episode_dict = {'episode': episode, 
+				'user_has_finished': episode in ep_tracker}
+			matching_eps.append(episode_dict)
+		matching_eps_dict = {'matching_eps': matching_eps, 
+			'finished_episodes_count': finished_episodes_count}
+		return matching_eps_dict
 
 	# Makes it so that hidden timelines are only visible to their creator
 	def test_func(self):

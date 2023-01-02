@@ -11,6 +11,25 @@
 
 {% block content %}
 <div class="user-form {% if changed_input %}changed-input{% endif %}">
+{% if title != '' %}
+  <h1>Editing "{{ title }}"</h1>
+{% else %}
+  <h1>Create new timeline</h1>
+  <p><i>Or <a href="{% url 'timeline_import' %}">import timeline</a></i></p>
+{% endif %}
+<noscript>
+  <p><b>Javascript is required for this page to work properly.</b></p>
+</noscript>
+
+<form class="timeline-edit-form" method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  {{ entry_formset.management_form }}
+  {{ divider_formset.management_form }}
+  {{ image_formset.management_form }}
+  {{ episode_formset.management_form }}
+  {{ import_episodes_formset.management_form }}
+  <input type="hidden" name="max-eps-per-entry" value="{{ MaxEpsPerEntry }}">
+
   <b>
     {% for error in entry_formset.non_form_errors %}
       <p class="form-error-text">{{ error }}</p>
@@ -21,80 +40,157 @@
     {% for error in image_formset.non_form_errors %}
       <p class="form-error-text">{{ error }}</p>
     {% endfor %}
+    {% for error in episode_formset.non_form_errors %}
+      <p class="form-error-text">{{ error }}</p>
+    {% endfor %}
+    {% for error in import_episodes_formset.non_form_errors %}
+      <p class="form-error-text">{{ error }}</p>
+    {% endfor %}
   </b>
 
-  {% if title != '' %}
-    <h1>Editing "{{ title }}"</h1>
-  {% else %}
-    <h1>Create new timeline</h1>
-    <p><i>Or <a href="{% url 'timeline_import' %}">import timeline</a></i></p>
-  {% endif %}
-  <noscript>
-    <p><b>Javascript is required for this page to work properly.</b></p>
-  </noscript>
+  {{ timeline_form }}    
 
-  <form class="timeline-edit-form" method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ entry_formset.management_form }}
-    {{ divider_formset.management_form }}
-    {{ image_formset.management_form }}
+  <!-- Where all the formsets for each item type go, mixed together. -->
+  <div class="formset">
+    <p class="helper-text add-remove-text">
+      <a class="entry-start-add" href="javascript:void(0)">Add Entry</a> | 
+      <a class="divider-start-add" href="javascript:void(0)">Add Divider</a> | 
+      <a class="image-start-add" href="javascript:void(0)">Add Image</a> 
+    </p>
 
-    {{ timeline_form }}
-    <br>
-    <a class="insert-entry-at-start" href="javascript:void(0)">Insert Entry</a> | 
-    <a class="insert-divider-at-start" href="javascript:void(0)">Insert Divider</a> | 
-    <a class="insert-image-at-start" href="javascript:void(0)">Insert Image</a> 
-    <br><br>
-
-    <!-- Where all the formsets for each item type go, mixed together. -->
-    <div class="formset">
-      {% for form in items %}
-        <div class="{{ form.type }}" id="id_{{ form.type }}-{{ form.count }}-div" {% if form.hidden %}hidden{% endif %}>
-          <h3 class="{{ form.type }}-header">
-            <a class="move-down" title="Move down" id="id_{{ form.type }}-{{ form.count }}-down" href="javascript:void(0)">▼</a>
-            <span class="{{ form.type }}-header-text">
+    {% for form in items %}
+      <div class="{{ form.type }}" id="{{ form.item.id.auto_id }}-div" {% if form.hidden %}hidden{% endif %}>
+        <div class="{{ form.type }}-styling">
+          <h3>
+            <a title="Move down" class="move-down" href="javascript:void(0)">▼</a>
+            <span class="{{ form.type }}-header">
               {% if form.type == 'entry' %}
-                Entry {{ form.count|add:1 }}/{{ MaxNumEntries }}
+                Entry {{ form.counter|add:1 }}/{{ MaxNumEntries }}
               {% elif form.type == 'divider' %}
-                Divider {{ form.count|add:1 }}/{{ MaxNumDividers }}
+                Divider {{ form.counter|add:1 }}/{{ MaxNumDividers }}
               {% elif form.type == 'image' %}
-                Image {{ form.count|add:1 }}/{{ MaxNumImages }}
+                Image {{ form.counter|add:1 }}/{{ MaxNumImages }}
               {% endif %}
             </span>
-            <a class="move-up" title="Move up" id="id_{{ form.type }}-{{ form.count }}-up" href="javascript:void(0)">▲</a>
+            <a title="Move up" class="move-up" href="javascript:void(0)">▲</a>
           </h3>
 
-          <!-- Check widgets/form_template.html for how forms are rendered -->
+          <!-- See widgets/form_template.html for how forms are rendered -->
           {{ form.item }}
 
-          <br>
-          {% if form.type == 'entry' %}
-            <span class="episode-list-button">
-              <a class="show-episode-list" href="javascript:void(0)">Show Episode List</a> | 
-            </span>
-          {% endif %}
-          <a class="delete-{{ form.type }}" id="id_{{ form.type }}-{{ form.count }}-delete-button" href="javascript:void(0)">
+          {% if form.type == 'entry' %}{% with form.episode_dict as ep_dict %}{% with form.import_form_dict as import_dict %}
+            <p class="has-episodes-buttons helper-text" {% if not ep_dict.has_episodes %}hidden{% endif %}><b>
+              <a href="javascript:void(0)" class="show-episode-list">Show Episode List</a>
+              <a href="javascript:void(0)" class="hide-episode-list" hidden>Hide Episode List</a> 
+              <span class="number-of-episodes">({{ ep_dict.episodes|length }} total)</span>
+            </b></p>
+            <p class="no-episodes-buttons helper-text" 
+              {% if ep_dict.has_episodes %}hidden 
+              {% elif import_dict.import_form and not import_dict.marked_for_deletion %}hidden
+              {% endif %}>
+              <b>
+                <a href="javascript:void(0)" class="add-episode-list">Add Episode List</a> | 
+                <a href="javascript:void(0)" class="add-import">Import Episodes</a> 
+              </b>
+              <br>
+              <i>If this entry consists of multiple parts, like episodes of a 
+                TV show or issues of a comic series, list those here. Click
+                "Add Episode List" to add episodes one by one, or click "Import
+                Episodes" to add them in bulk.</i>
+            </p>
+            
+            <div class="episode-list" {% if not ep_dict.has_errors %}hidden{% endif %}>
+              <hr>
+              <p class="helper-text add-remove-text">
+                <a class="episode-start-add" href="javascript:void(0)">Add Episode</a>
+              </p>
+              {% if ep_dict.has_episodes %}
+                {% for episode in ep_dict.episodes %}{% with episode.position_episode.value as pos_ep %}
+                  <div class="episode" id="{{ episode.id.auto_id }}-div">
+                    {{ episode.id }}
+                    <b>
+                      <a title="Move down" class="move-down" href="javascript:void(0)">▼</a>
+                      <span class="episode-header">
+                        Episode {{ pos_ep|add:1 }}/{{ MaxEpsPerEntry }}
+                      </span>
+                      <a title="Move up" class="move-up" href="javascript:void(0)">▲</a>
+                    </b>
+                    <br>
+                    {{ episode }}
+                    <div class="add-remove-text">
+                      <a class="episode-add" href="javascript:void(0)">Add Episode</a> | 
+                      <a class="delete" href="javascript:void(0)">Delete Episode</a>
+                    </div>
+                  </div>
+                {% endwith %}{% endfor %}
+              {% endif %}
+            </div>
+            
+            <div class="importepisodes-outer-div" {% if import_dict.marked_for_deletion or not import_dict.import_form %}hidden{% endif %}>
+              <hr>
+              <p><b>Import Episodes</b></p>
+              <p class="helper-text"><i>To use the import form, just copy-paste 
+                a list of episode titles below, with each title on a separate 
+                line of text. After you save the timeline, each row will be 
+                converted into an episode which you can edit further if you 
+                wish. Each entry can have up to 100 episodes.
+              </i></p>
+              <div class="importepisodes-middle-div">
+                {% if import_dict.import_form %}
+                  <div class="importepisodes-inner-div">
+                    {{ import_dict.import_form }}
+                  </div>
+                {% endif %}
+              </div>
+              <br>
+              <div class="add-remove-text">
+                <a class="remove-import" href="javascript:void(0)">Delete Import Episodes Form</a>
+              </div>
+            </div>
+          {% endwith %}{% endwith %}{% endif %}
+        </div>
+
+        <div class="add-remove-text">
+          <a class="delete" href="javascript:void(0)">
             Delete {{ form.type|capfirst }}
           </a>
           <br>
-          <a class="insert-entry" href="javascript:void(0)">Insert Entry</a> | 
-          <a class="insert-divider" href="javascript:void(0)">Insert Divider</a> | 
-          <a class="insert-image" href="javascript:void(0)">Insert Image</a> 
-          <br>
+          <p class="helper-text">
+            <a class="entry-add" href="javascript:void(0)">Add Entry</a> | 
+            <a class="divider-add" href="javascript:void(0)">Add Divider</a> | 
+            <a class="image-add" href="javascript:void(0)">Add Image</a> 
+          </p>
         </div>
-        {% endfor %}
-    </div>      
+      </div>
+    {% endfor %}
+  </div>
 
-    <p>
-      <input name="save-timeline" type="submit" value="Save timeline">
-    </p>
-  </form>
+  <p>
+    <input name="save-timeline" type="submit" value="Save timeline">
+  </p>
+</form>
 
-  {% for form in episode_items %}
-    <div class="{{ form.type }}" id="id_{{ form.type }}-{{ form.count }}-div" hidden>
-      {{ form }}
-    </div>
-  {% endfor %}
+<!-- Here's where we store blank templates for episodes and the episode
+import form, in case there aren't any in the main form already. -->
+<div class="episode" id="id_episode-__prefix__-id-div" hidden>
+  <b>
+    <a title="Move down" class="move-down" href="javascript:void(0)">▼</a>
+    <span class="episode-header">
+      Episode 1/{{ MaxEpsPerEntry }}
+    </span>
+    <a title="Move up" class="move-up" href="javascript:void(0)">▲</a>
+  </b>
+  <br>
+  {{ episode_formset.empty_form }}
+  <div class="add-remove-text">
+    <a class="episode-add" href="javascript:void(0)">Add Episode</a> | 
+    <a class="delete" href="javascript:void(0)">Delete Episode</a>
+  </div>
+</div>
+
+<div class="importepisodes-inner-div" hidden>
+  {{ import_episodes_formset.empty_form }}
+</div>
 
 </div>
 {% endblock content %}
@@ -105,6 +201,7 @@
     warnOfUnsavedChanges();
     stopEnterFromSubmitting();
     markFieldErrors();
+    preventDoubleSubmissions();
   </script>
   <script src="{% static 'js/jquery.swap.js' %}"></script>
   <script src="{% static 'js/timelines/timeline_edit.js' %}"></script>

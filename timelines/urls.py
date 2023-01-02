@@ -24,8 +24,6 @@ urlpatterns = [
 		views_search.HiddenTimelinesView.as_view(), name='hidden_timelines'),
 	
 	# Other
-	path('timelines/<int:pk>/saved/',
-		views_edit.TimelineSavedView.as_view(), name='timeline_saved'),
 	path('timelines/<int:pk>/',
 		views.TimelineDetailView.as_view(), name='timeline_detail'),
 
@@ -34,4 +32,6 @@ urlpatterns = [
 		views_ajax.bookmarkChange, name='bookmark_change'),
 	path('timelines/ajax/user_has_finished_change', 
 		views_ajax.userHasFinishedChange, name='user_has_finished_change'),
+	path('timelines/ajax/user_has_finished_ep_change', 
+		views_ajax.userHasFinishedEpChange, name='user_has_finished_ep_change'),
 ]

@@ -1,6 +1,7 @@
-MaxNumEntries = 1000
+MaxNumEntries = 100
 MaxNumDividers = 50
 MaxNumImages = 25
+MaxEpsPerEntry = 100
 
 #How many rows to display for textareas by default
 TextAreaRows = 10

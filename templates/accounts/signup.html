@@ -9,7 +9,7 @@
 		{% csrf_token %}
 		{{ form }}
 		<br>
-		<button type="submit">Sign Up</button>
+		<input name="signup" type="submit" value="Sign up">
 	</form>
 </div>
 {% endblock content %}
@@ -18,5 +18,6 @@
 	{{ block.super }}
 	<script>
     markFieldErrors();
+    preventDoubleSubmissions();
   </script>
 {% endblock scripts %}

@@ -102,7 +102,7 @@ class Entry(models.Model):
 	position = models.IntegerField(default=s_c.extra_form_position)
 
 	class Meta:
-		ordering = ['position',]
+		ordering = ['timeline', 'position',]
 
 	def __str__(self):
 		return self.name
@@ -112,17 +112,27 @@ class Entry(models.Model):
 
 
 class Episode(models.Model):
-	entry = models.ForeignKey(
-		Entry, 
+	timeline = models.ForeignKey(
+		Timeline, 
 		on_delete=models.CASCADE,
 		related_name='episode',
 	)
 	name = models.CharField(max_length=s_c.CharFieldMaxLength)
 	date = copy.deepcopy(s_o.default_charfield)
+	link = models.URLField(
+		max_length = 200,
+		default='',
+		blank=True,
+		null=True
+	)
+	''' position is the episode's position in the overall timeline, that is 
+	which entry it's matched to. position_episode is the episode's position
+	relative to the other episodes of a particular entry. '''
 	position = models.IntegerField(default=s_c.extra_form_position)
+	position_episode = models.IntegerField(default=s_c.extra_form_position)
 
 	class Meta:
-		ordering = ['position',]
+		ordering = ['timeline', 'position', 'position_episode',]
 
 	def __str__(self):
 		return self.name
@@ -140,7 +150,7 @@ class Divider(models.Model):
 	position = models.IntegerField(default=s_c.extra_form_position)
 
 	class Meta:
-		ordering = ['position',]
+		ordering = ['timeline', 'position',]
 
 	def __str__(self):
 		return self.name
@@ -163,7 +173,7 @@ class Image(models.Model):
 	position = models.IntegerField(default=s_c.extra_form_position)
 
 	class Meta:
-		ordering = ['position',]
+		ordering = ['timeline', 'position',]
 
 
 class UserHasFinishedTracker(models.Model):
@@ -178,23 +188,7 @@ class UserHasFinishedTracker(models.Model):
 		related_name='timeline_tracker',
 	)
 	mark_as_finished = models.ManyToManyField(Entry, blank=True)
+	mark_ep_as_finished = models.ManyToManyField(Episode, blank=True)
 
 	def __str__(self):
 		return 'User: ' + str(self.user) + " TL: " + str(self.timeline)
-
-
-# class UserHasFinishedEpisodeTracker(models.Model):
-# 	user = models.ForeignKey(
-# 		CustomUser,
-# 		on_delete=models.CASCADE,
-# 		related_name='episode_tracker'
-# 	)
-# 	entry = models.ForeignKey(
-# 		Entry, 
-# 		on_delete=models.CASCADE,
-# 		related_name='entry_tracker',
-# 	)
-# 	mark_as_finished = models.ManyToManyField(Episode, blank=True)
-
-# 	def __str__(self):
-# 		return 'User: ' + str(self.user) + " Entry: " + str(self.entry)

@@ -1,4 +1,5 @@
 <div class="image-field">
+	<b>
 	{% if widget.is_initial %}
 		{% if not widget.required %}
 			<label>Delete current image:</label>
@@ -7,8 +8,7 @@
 		{% endif %}
 	{% endif %}
 	<input type="{{ widget.type }}" name="{{ widget.name }}"{% include "django/forms/widgets/attrs.html" %}>
-	<button type="submit" class="remove-image">
-		Remove File
-	</button>
+	<button type="submit" class="remove-image">Remove File</button>
+</b>
 </div>
 <br>
