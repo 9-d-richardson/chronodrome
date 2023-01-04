@@ -139,13 +139,13 @@
 					{% endfor %}
 					</ol>
 				</div>
-			{% endif %}{% endwith %}
+			{% endif %}
 		
 			{% if user.is_authenticated %}
 				<form class="user-has-finished-change" method="post">{% csrf_token %}
 					<div class="button-row" class="mark-as-unfinished-div" id="is-finished-{{ entry.pk }}" {% if not item.user_has_finished %}hidden{% endif %}>
 						<button type="submit" class="mark-as-unfinished" value="{{ entry.pk }}">
-							{% if item.matching_eps_dict %}
+							{% if eps_dict.matching_eps %}
 								Mark all unfinished
 							{% else %}
 								Mark unfinished
@@ -154,7 +154,7 @@
 					</div>
 					<div class="button-row" id="is-unfinished-{{ entry.pk }}" {% if item.user_has_finished %}hidden{% endif %}>
 						<button type="submit" class="mark-as-finished" value="{{ entry.pk }}">
-							{% if item.matching_eps_dict %}
+							{% if eps_dict.matching_eps %}
 								Mark all finished
 							{% else %}
 								Mark finished
@@ -164,7 +164,7 @@
 				</form>
 			{% endif %}
 		</div>
-	{% endwith %}
+	{% endwith %}{% endwith %}
 
 	{% elif item.type == 'divider' %}{% with item.item as divider %}
 		{% if item.is_blank %}

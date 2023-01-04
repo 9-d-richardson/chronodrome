@@ -55,7 +55,7 @@ class TimelineDetailView(UserPassesTestMixin, TemplateView, HitCountMixin):
 			context['user_has_finished_TL'] = (total_finished == total_entries 
 				and total_entries > 0)
 		else:
-			tracker = []
+			tracker, ep_tracker = [], []
 
 		'''Assembles all TL items into a single list with any extra info the 
 		template needs, then sorts it by position'''
