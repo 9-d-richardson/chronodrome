@@ -54,12 +54,14 @@ def userHasFinishedEpChange(request):
 		request.method == 'POST'):
 		action = request.POST.get('action')
 		episode = get_object_or_404(Episode, pk=request.POST.get('episodeID'))
-		matching_entry = get_object_or_404(Entry, timeline=episode.timeline, 
-			position=episode.position)
-		matching_eps = Episode.objects.filter(timeline=episode.timeline, 
-			position=episode.position)
+		timeline = episode.timeline
+		position = episode.position
+		matching_entry = get_object_or_404(Entry, timeline=timeline, 
+			position=position)
+		matching_eps = Episode.objects.filter(timeline=timeline, 
+			position=position)
 		tracker_object = get_object_or_404(UserHasFinishedTracker, 
-			user=request.user, timeline=episode.timeline)
+			user=request.user, timeline=timeline)
 		tracker = tracker_object.mark_as_finished
 		ep_tracker = tracker_object.mark_ep_as_finished
 		need_to_mark_entry_finished = True
