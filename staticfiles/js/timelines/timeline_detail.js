@@ -1,4 +1,6 @@
 $(function() {
+	var numberOfEntries = $('.entry').length;
+
 	/* Marks entries and their episodes as finished/unfinished and makes the 
 	appropriate changes to the Django model via Ajax and then, assuming success, 
 	to the HTML (in a separate function). */
@@ -41,7 +43,7 @@ $(function() {
 			entry.find('.mark-ep-as-unfinished-div').hide();
 			entry.find('.episode-text').removeClass('has-finished');
 		}
-		reloadFinishedCounters();
+		reloadFinishedCounters(entryID);
 	}
 
 	/* Marks episodes as finished/unfinished and makes changes to the parent
@@ -90,18 +92,23 @@ $(function() {
 				$('#is-unfinished-' + entryID).hide();
 			}
 		}
-		reloadFinishedCounters();
+		reloadFinishedCounters(entryID);
 	}
 
-	/* Reloads the parts of the pages which count how many items the user has
-	finished. Might need to rewrite at some point if this turns out to be too 
-	resource intensive */
-	function reloadFinishedCounters() {
-		$("#user-has-finished").load(location.href + " #user-has-finished>*","");
-		$(".finished-episodes-count").each(function() {
-			countID = $(this).attr('id');
-			$('#' + countID).load(location.href + " #" + countID,"");
-		})
+	/* Changes the counters for the timeline and each entry that has episodes,
+	to reflect how many entries/episodes have been finished */
+	function reloadFinishedCounters(entryID) {
+		var numberOfFinishedEntries = $('.entry.has-finished').length,
+			numberOfEpisodes = $('#entry-' + entryID).find('.episode-text').length,
+			numberOfFinishedEpisodes = $('#entry-' + entryID).find('.episode-text.has-finished').length;
+		if (numberOfFinishedEntries === numberOfEntries) {
+			$("#user-has-finished").html("<h3>Congratulations, you've finished this timeline!</h3>")
+		} else {
+			$("#user-has-finished").html('<h3>You have finished ' + numberOfFinishedEntries + 
+				' out of ' + numberOfEntries + ' entries in this timeline.</h3>')
+		}
+		$('#entry-' + entryID).find('.finished-episodes-count').text('(' + 
+			numberOfFinishedEpisodes + '/' + numberOfEpisodes + ' Finished)')
 	}
 
 	// Shows or hides the episode list for a given entry
