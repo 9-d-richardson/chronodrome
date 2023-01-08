@@ -112,10 +112,7 @@
 					{% for episode_dict in eps_dict.matching_eps %}
 					{% with episode_dict.episode as episode %}
 						<li class="episode-text{% if episode_dict.user_has_finished %} has-finished{% endif %}" id="episode-{{ episode.pk }}">
-							{% if episode.link  != '' %}
-								<a href="{{ episode.link }}" target="_blank" rel="noopener noreferrer">
-							{% endif %}
-							<b>{{ episode.name }}</b></a>
+							<b>{{ episode.name }}</b>
 							{% if episode.date %}
 								- <i>{{ episode.date }}</i>
 							{% endif %}
