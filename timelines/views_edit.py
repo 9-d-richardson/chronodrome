@@ -209,7 +209,7 @@ class TimelineEditView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 				'''Sorts the episodes in case timeline_edit has been reloaded
 				due to an error, which can cause the episodes to get jumbled.'''
 				sorted_episode_list = sorted(episode_lists[pos], 
-					key=lambda episode: episode['position_episode'].value())
+					key=lambda episode: int(episode['position_episode'].value()))
 				episode_dict = {
 					'episodes': sorted_episode_list,
 					'total_episodes': len(episode_lists[pos]),
@@ -227,7 +227,8 @@ class TimelineEditView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 			items.append({'item': divider, 'type': 'divider'})
 		for i, image in enumerate(image_formset):
 			items.append({'item': image, 'type': 'image'})
-		items = sorted(items, key=lambda item: item['item']['position'].value())
+
+		items = sorted(items, key=lambda item: int(item['item']['position'].value()))
 
 		''' We have to do these counters in order to properly display the 
 		header numbering for each item. For example, "Entry 1/100". We have to

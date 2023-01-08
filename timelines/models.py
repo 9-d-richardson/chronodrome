@@ -119,12 +119,6 @@ class Episode(models.Model):
 	)
 	name = models.CharField(max_length=s_c.CharFieldMaxLength)
 	date = copy.deepcopy(s_o.default_charfield)
-	link = models.URLField(
-		max_length = 200,
-		default='',
-		blank=True,
-		null=True
-	)
 	''' position is the episode's position in the overall timeline, that is 
 	which entry it's matched to. position_episode is the episode's position
 	relative to the other episodes of a particular entry. '''

@@ -14,16 +14,6 @@ date_field = forms.CharField(
 	required=False,
 	label="Date:"
 )
-link_field = forms.URLField(
-	widget=forms.TextInput(attrs={
-		'placeholder': 'E.g. link to a preferred edition', 
-	}),
-	required=False,
-	label="Link:",
-	error_messages={
-		'invalid': 'This URL is invalid.',
-	}
-)
 comment_field = forms.CharField(
 	max_length=s_c.TextFieldMaxLength,
 	widget=forms.Textarea(attrs={'rows': s_c.TextAreaRows,}), 
@@ -97,7 +87,16 @@ class EntryForm(s_o.CustomModelForm):
 		label="Section:"
 	)
 	date = date_field
-	link = link_field
+	link = forms.URLField(
+		widget=forms.TextInput(attrs={
+			'placeholder': 'E.g. link to a preferred edition', 
+		}),
+		required=False,
+		label="Link:",
+		error_messages={
+			'invalid': 'This URL is invalid.',
+		}
+	)
 	comment = comment_field
 	position = position_field
 
@@ -145,7 +144,7 @@ class ImageForm(s_o.CustomModelForm):
 class EpisodeForm(s_o.CustomModelForm):
 	class Meta:
 		model = Episode
-		fields = ['name', 'date', 'link', 'position', 'position_episode']
+		fields = ['name', 'date', 'position', 'position_episode']
 	name = forms.CharField(
 		max_length=s_c.CharFieldMaxLength, 
 		label="Name*:",
@@ -154,7 +153,6 @@ class EpisodeForm(s_o.CustomModelForm):
 		}
 	)
 	date = date_field
-	link = link_field
 	position = position_field
 	position_episode = position_field
 
