@@ -63,9 +63,7 @@ $(function() {
 				'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val()
 			},
 			success: function(response) {
-				needToMarkEntryFinished = response['need_to_mark_entry_finished']
-				changeItemHTMLAfterAjaxFinishes(action, entryID, episodeID, 
-					needToMarkEntryFinished)
+				changeItemHTMLAfterAjaxFinishes(action, entryID, episodeID)
 			},
 			error: function(response) {
 				console.log(response);
@@ -73,8 +71,7 @@ $(function() {
 		});
 	});
 
-	function changeItemHTMLAfterAjaxFinishes(action, entryID, episodeID, 
-		needToMarkEntryFinished) {
+	function changeItemHTMLAfterAjaxFinishes(action, entryID, episodeID) {
 		if (action === 'mark-ep-as-unfinished') {
 			$('#episode-' + episodeID).removeClass('has-finished');
 			$('#ep-is-finished-' + episodeID).hide();
@@ -86,7 +83,9 @@ $(function() {
 			$('#episode-' + episodeID).addClass('has-finished');
 			$('#ep-is-finished-' + episodeID).show();
 			$('#ep-is-unfinished-' + episodeID).hide();
-			if (needToMarkEntryFinished === true) {
+			var numberOfEpisodes = $('#entry-' + entryID).find('.episode-text').length,
+				numberOfFinishedEpisodes = $('#entry-' + entryID).find('.episode-text.has-finished').length;
+			if (numberOfEpisodes === numberOfFinishedEpisodes) {
 				$('#entry-' + entryID).addClass('has-finished')
 				$('#is-finished-' + entryID).show();
 				$('#is-unfinished-' + entryID).hide();

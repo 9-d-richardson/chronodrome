@@ -54,34 +54,26 @@ def userHasFinishedEpChange(request):
 		request.method == 'POST'):
 		action = request.POST.get('action')
 		episode = get_object_or_404(Episode, pk=request.POST.get('episodeID'))
-		timeline = episode.timeline
-		position = episode.position
+		timeline, position = episode.timeline, episode.position
 		matching_entry = get_object_or_404(Entry, timeline=timeline, 
-			position=position)
-		matching_eps = Episode.objects.filter(timeline=timeline, 
 			position=position)
 		tracker_object = get_object_or_404(UserHasFinishedTracker, 
 			user=request.user, timeline=timeline)
 		tracker = tracker_object.mark_as_finished
 		ep_tracker = tracker_object.mark_ep_as_finished
-		need_to_mark_entry_finished = True
 		if action == 'mark-ep-as-unfinished':
-			need_to_mark_entry_finished = False
 			ep_tracker.remove(episode)
 			tracker.remove(matching_entry)
 		elif action == 'mark-ep-as-finished':
 			ep_tracker.add(episode)
-			for episode in matching_eps:
-				if episode not in ep_tracker.all():
-					need_to_mark_entry_finished = False
-					break
-			if need_to_mark_entry_finished == True:
+			matching_eps = Episode.objects.filter(timeline=timeline, 
+				position=position)
+			''' If the number of finished eps equals the number of total eps, 
+			mark the parent entry as read '''
+			if ep_tracker.count() == matching_eps.count():
 				tracker.add(matching_entry)
 		else:
 			return JsonResponse({}, status = 400)
-		return JsonResponse(
-			{'need_to_mark_entry_finished': need_to_mark_entry_finished}, 
-			status = 200
-		)
+		return JsonResponse({}, status = 200)
 	return JsonResponse({}, status = 400)
 
