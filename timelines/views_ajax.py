@@ -68,9 +68,12 @@ def userHasFinishedEpChange(request):
 			ep_tracker.add(episode)
 			matching_eps = Episode.objects.filter(timeline=timeline, 
 				position=position)
-			''' If the number of finished eps equals the number of total eps, 
-			mark the parent entry as read '''
-			if ep_tracker.count() == matching_eps.count():
+			need_to_mark_entry_finished = True
+			for episode in matching_eps:
+				if episode not in ep_tracker.all():
+					need_to_mark_entry_finished = False
+					break
+			if need_to_mark_entry_finished == True:
 				tracker.add(matching_entry)
 		else:
 			return JsonResponse({}, status = 400)
