@@ -178,13 +178,19 @@ a bit if we make the form more complicated with extra divs. */
 		}
 	})
 
-/* If timeline_edit gets reloaded because it's invalid, this keeps the items 
+/* 
+- If timeline_edit gets reloaded because it's invalid, this keeps the items 
 marked for deletion properly hidden, both episodes and regular TL items. 
 Ideally, the page will look the same as before, just with the errors marked and
-with the episode lists that have no errors hidden. The second parameter in the 
-deleteItem() call is to set fadeoutTime to 0 so that the deleted items 
-disappear immediately */
+with the episode lists that have no errors hidden. 
+- The second parameter in the deleteItem() call is to set fadeoutTime to 0 so 
+that the deleted items disappear immediately. 
+- It's necessary to call updateItems() because otherwise items can start out 
+with the wrong ID number, which can mess up the undelete button for items 
+marked for deletion when the page reloads. 
+*/
 	$(document).ready(function() {
+		updateItems();
 		$('[name$="DELETE"]:not([name^="importepisodes"])').each(function() {
 			if ($(this).val() === 'true') {
 				parentForm = $(this).parent().closest('[id^="id_"]');
