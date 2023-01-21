@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    # For deploying static files in production
+    # For deploying static files in production - http://whitenoise.evans.io/en/latest/
     'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
 
@@ -56,6 +56,10 @@ INSTALLED_APPS = [
     'sorl.thumbnail', 
     # Counts views for timeline-detail - https://django-hitcount.readthedocs.io/
     'hitcount',
+
+    # Also need to install in your virtual env:
+    # https://pypi.org/project/environs/ 
+    # https://boto3.amazonaws.com/v1/documentation/api/latest/guide/quickstart.html
 ]
 
 MIDDLEWARE = [
@@ -70,6 +74,7 @@ MIDDLEWARE = [
 ]
 
 # if DEBUG:
+#     # https://django-debug-toolbar.readthedocs.io/en/latest/installation.html
 #     INSTALLED_APPS.append('debug_toolbar')
 #     MIDDLEWARE.append('debug_toolbar.middleware.DebugToolbarMiddleware')
 
