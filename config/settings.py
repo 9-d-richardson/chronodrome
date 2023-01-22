@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     # Also need to install in your virtual env:
     # https://pypi.org/project/environs/ 
     # https://boto3.amazonaws.com/v1/documentation/api/latest/guide/quickstart.html
+    # https://pillow.readthedocs.io/en/stable/installation.html
 ]
 
 MIDDLEWARE = [

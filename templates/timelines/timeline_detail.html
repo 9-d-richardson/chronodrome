@@ -9,8 +9,8 @@
 {% block content %}
 <div id="timeline-entry">
 	{% if timeline.hidden %}
-		<h3 class="error">Timeline is currently hidden. Only you can see this. 
-		To see all your hidden timelines, go to your profile page.</h3>
+		<h3 class="error">Timeline is currently hidden. Only you can see this. <br>
+			To see all your hidden timelines, go to your profile page.</h3>
 	{% endif %}
 	{% if has_edit_permissions %}
 		<p class="helper-text"><a href="{% url 'timeline_edit' timeline.pk %}">Edit</a> | 

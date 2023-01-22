@@ -246,7 +246,7 @@ because it also gets called when the page first loads*/
 				itemToUndelete.find('[id$="DELETE"]').removeClass('marked-for-deletion');
 				itemToUndelete.find('[id$="DELETE"]').val('')
 			} else {
-				itemToUndelete.find('a[id$="DELETE"]:not([id^="id_episode"])').val('')
+				itemToUndelete.find('[id$="DELETE"]:not([id^="id_episode"])').val('')
 				if (!itemToUndelete.find('.episode-list').hasClass('list-marked-for-deletion')) {
 					itemToUndelete.find('[id^="id_episode"][id$="DELETE"][class!="marked-for-deletion"]').val('')
 				}
