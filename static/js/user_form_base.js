@@ -54,23 +54,3 @@ function preventDoubleSubmissions() {
 		$('input[type="submit"]').attr("disabled", true);
 	})
 }
-
-// If implemented, these two functions will help prevent multiple submissions
-// function getIdempotencyKey() {
-// 	return $('input[name="IDEMPOTENCY_KEY"]').val()
-// }
-
-// function checkIdempotencyKey(idempotency_key, callback) {
-// 	$.ajax({
-// 		type: 'GET',
-// 		url: '/accounts/ajax/is_field_taken',
-// 		async: false,
-// 		data: {'idempotency_key': idempotency_key},
-// 		success: function(response) {
-// 			callback(response['valid']);
-// 		},
-// 		error: function(response) {
-// 			console.log(response);
-// 		}
-// 	});
-// }

@@ -206,8 +206,8 @@ marked for deletion when the page reloads.
 		})
 	});
 
-/*Hides items marked for deletion. Has to be a separate, named function
-because it also gets called when the page first loads*/
+/* Hides items marked for deletion. Has to be a separate, named function
+because it also gets called when the page first loads */
 	function deleteItem(button, fadeOutTime) {
 		const {itemType, idBase, parentForm} = getButtonData(button)
 		button.addClass('temp-disabled')
