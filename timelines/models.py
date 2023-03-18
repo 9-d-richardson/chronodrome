@@ -1,10 +1,13 @@
 import copy
 import uuid
+import shortuuid
+from shortuuid.django_fields import ShortUUIDField
 
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.urls import reverse
 from django.contrib.contenttypes.fields import GenericRelation
+from django.template.defaultfilters import slugify
 
 from hitcount.models import HitCountMixin
 from hitcount.settings import MODEL_HITCOUNT
@@ -16,15 +19,15 @@ from config import shared_objects as s_o
 
 # Where to save images. Same folder for both, just accessed a different way
 def header_image_directory_path(instance, filename):
-	new_filename = str(uuid.uuid4().hex)
+	new_filename = shortuuid.uuid()[:10]
 	filetype = filename.split('.')[-1]
 	return 'timeline_images/{0}/{1}.{2}'.format(
-		instance.id, new_filename, filetype)
+		instance.url, new_filename, filetype)
 def image_directory_path(instance, filename):
-	new_filename = str(uuid.uuid4().hex)
+	new_filename = shortuuid.uuid()[:10]
 	filetype = filename.split('.')[-1]
 	return 'timeline_images/{0}/{1}.{2}'.format(
-		instance.timeline.id, new_filename, filetype)
+		instance.timeline.url, new_filename, filetype)
 
 
 class Timeline(models.Model, HitCountMixin):
@@ -33,6 +36,13 @@ class Timeline(models.Model, HitCountMixin):
 		upload_to=header_image_directory_path,
 		null=True,
 		blank=True
+	)
+	header_caption = copy.deepcopy(s_o.default_charfield)
+	header_source = models.URLField(
+		max_length = 200,
+		default='',
+		blank=True,
+		null=True
 	)
 	description = copy.deepcopy(s_o.default_textfield)
 	created = models.DateTimeField(auto_now_add=True)
@@ -53,6 +63,10 @@ class Timeline(models.Model, HitCountMixin):
 		object_id_field='object_pk',
 		related_query_name='hit_count_generic_relation'
 	)
+	url = ShortUUIDField(
+		length=10,
+    )
+	slug = models.SlugField()
 
 	class Meta:
 		ordering = ['-updated',]
@@ -60,13 +74,16 @@ class Timeline(models.Model, HitCountMixin):
 
 	''' Save function is modified to save the timeline before saving the image
 	because for new TLs you have to get the TL's pk first to know which folder
-	to save the images to. '''
+	to save the images to. Also changes the slug each time the title changes,
+	which is fine because the slug part of the URL doesn't affect anything,
+	it's just there for display, so it can change.'''
 	def save(self, *args, **kwargs):
 		if self.id is None:
 			saved_header_image = self.header_image
 			self.header_image = None
 			super(Timeline, self).save(*args, **kwargs)
 			self.header_image = saved_header_image
+		self.slug = slugify(self.title)
 		super(Timeline, self).save(*args, **kwargs)
 
 	def __str__(self):
@@ -164,6 +181,12 @@ class Image(models.Model):
 		null=True,
 	)
 	caption = copy.deepcopy(s_o.default_charfield)
+	source = models.URLField(
+		max_length = 200,
+		default='',
+		blank=True,
+		null=True
+	)
 	position = models.IntegerField(default=s_c.extra_form_position)
 
 	class Meta:

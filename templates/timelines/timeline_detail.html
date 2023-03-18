@@ -50,6 +50,10 @@
 					<img class="timeline-image" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
 				{% endthumbnail %}
 			</a>
+			<p class="image-caption"><i>
+				{% if timeline.header_caption %}{{ timeline.header_caption }}{% endif %} 
+				{% if timeline.header_source %}(<a href="{{ timeline.header_source }}">Source</a>){% endif %}
+			</i></p>
 		</div>
 	{% endif %}
 	<p>{{ timeline.description|linebreaks }}</p>
@@ -189,9 +193,10 @@
 					<img class="timeline-image" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
 				{% endthumbnail %}
 			</a>
-			{% if image.caption %}
-				<p class="image-caption"><i>{{ image.caption }}</i></p>
-			{% endif %}
+			<p class="image-caption"><i>
+				{% if image.caption %}{{ image.caption }}{% endif %} 
+				{% if image.source %}(<a href="{{ image.source }}">Source</a>){% endif %}
+			</i></p>
 		</div>
 	{% endwith %}{% endif %}
 	

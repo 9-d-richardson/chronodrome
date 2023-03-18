@@ -33,7 +33,8 @@ position_field = forms.IntegerField(
 class TimelineForm(s_o.CustomModelForm):
 	class Meta:
 		model = Timeline
-		fields = ['title', 'header_image', 'description', 'hidden']
+		fields = ['title', 'description', 'header_image', 'header_caption', 
+			'header_source', 'hidden']
 	title = forms.CharField(
 		max_length=s_c.CharFieldMaxLength, 
 		label="Title*:"
@@ -42,6 +43,21 @@ class TimelineForm(s_o.CustomModelForm):
 		required=False,
 		label="Header image:",
 		widget=s_o.CustomImageInput
+	)
+	header_caption = forms.CharField(
+		max_length=s_c.CharFieldMaxLength,
+		required=False,
+		label="Image caption:"
+	)
+	header_source = forms.URLField(
+		widget=forms.TextInput(attrs={
+			'placeholder': "Link to the image's source", 
+		}),
+		required=False,
+		label="Image source:",
+		error_messages={
+			'invalid': 'This URL is invalid.',
+		}
 	)
 	description = forms.CharField(
 		max_length=s_c.TextFieldMaxLength,
@@ -125,7 +141,7 @@ class DividerForm(s_o.CustomModelForm):
 class ImageForm(s_o.CustomModelForm):
 	class Meta:
 		model = Image
-		fields = ['image', 'caption', 'position']
+		fields = ['image', 'caption', 'source', 'position']
 	image = forms.ImageField(
 		widget=s_o.CustomImageInput,
 		label="Image*:",
@@ -137,6 +153,16 @@ class ImageForm(s_o.CustomModelForm):
 		max_length=s_c.CharFieldMaxLength,
 		required=False,
 		label="Caption:"
+	)
+	source = forms.URLField(
+		widget=forms.TextInput(attrs={
+			'placeholder': "Link to the image's source", 
+		}),
+		required=False,
+		label="Image source:",
+		error_messages={
+			'invalid': 'This URL is invalid.',
+		}
 	)
 	position = position_field
 

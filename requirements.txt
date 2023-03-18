@@ -15,8 +15,10 @@ Pillow==9.4.0
 python-dateutil==2.8.2
 python-dotenv==0.21.1
 s3transfer==0.6.0
+shortuuid==1.0.11
 six==1.16.0
 sorl-thumbnail==12.9.0
 sqlparse==0.4.3
 urllib3==1.26.14
 whitenoise==6.3.0
+shortuuid
