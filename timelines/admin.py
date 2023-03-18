@@ -10,7 +10,8 @@ class TimelineAdmin(admin.ModelAdmin):
 	inlines = [
 		EntryInline,
 	]
-	list_display = ('title', 'creator')
+
+	list_display = ('title', 'creator', 'url', 'slug')
 
 admin.site.register(Timeline, TimelineAdmin)
 admin.site.register(Entry)
