@@ -56,7 +56,7 @@ class TimelineImportView(LoginRequiredMixin, TemplateView):
 				Entry.objects.bulk_create(new_entries)
 				messages.success(request, 'Timeline saved! You can edit it further here.')
 				return HttpResponseRedirect(reverse_lazy('timeline_edit', 
-					kwargs={"pk":timeline_form.instance.id}))
+					kwargs={"url":timeline_form.instance.url}))
 
 		messages.error(request, 'There were problems importing your timeline.')
 		return render(self.request, self.template_name, {
@@ -73,10 +73,10 @@ class TimelineEditView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 	template_name = "timelines/timeline_edit.html" 
 
 	def get_context_data(self, **kwargs):
-		if 'pk' not in self.kwargs:
+		if 'url' not in self.kwargs:
 			timeline = Timeline(creator=self.request.user)
 		else:
-			timeline = get_object_or_404(Timeline, pk=self.kwargs['pk'])
+			timeline = get_object_or_404(Timeline, url=self.kwargs['url'])
 		timeline_form = TimelineForm(instance=timeline)
 		entry_formset = EntryFormSet(instance=timeline)
 		divider_formset = DividerFormSet(instance=timeline)
@@ -92,10 +92,10 @@ class TimelineEditView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 	def post(self, request, *args, **kwargs):
 		data = request.POST 
 		files = request.FILES
-		if 'pk' not in self.kwargs:
+		if 'url' not in self.kwargs:
 			timeline = Timeline(creator=self.request.user)
 		else:
-			timeline = get_object_or_404(Timeline, pk=self.kwargs['pk'])
+			timeline = get_object_or_404(Timeline, url=self.kwargs['url'])
 		timeline_form = TimelineForm(instance=timeline, data=data, files=files)
 		entry_formset = EntryFormSet(instance=timeline, data=data)
 		divider_formset = DividerFormSet(instance=timeline, data=data)
@@ -136,7 +136,8 @@ class TimelineEditView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 				messages.success(request, 
 					'Timeline saved! Redirecting to your timeline now!')
 				return HttpResponseRedirect(reverse_lazy('timeline_detail', 
-					kwargs={"pk":timeline_form.instance.id}))
+					kwargs={"url":timeline_form.instance.url, 
+						"slug":timeline_form.instance.slug}))
 
 		messages.error(request, 'There were problems saving your timeline.')
 		context = self.assembleContext(timeline_form, entry_formset, 
@@ -146,10 +147,10 @@ class TimelineEditView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 		return render(self.request, self.template_name, context)
 
 	def test_func(self):
-		if 'pk' not in self.kwargs:
+		if 'url' not in self.kwargs:
 			return True
 		else:
-			timeline = get_object_or_404(Timeline, pk=self.kwargs['pk'])
+			timeline = get_object_or_404(Timeline, url=self.kwargs['url'])
 			return timeline.creator == self.request.user
 
 	'''
@@ -289,3 +290,6 @@ class TimelineDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 	def test_func(self):
 		obj = self.get_object()
 		return obj.creator == self.request.user
+
+	def get_object(self, queryset=None):
+		return Timeline.objects.get(url=self.kwargs['url'])

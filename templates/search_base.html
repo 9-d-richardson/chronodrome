@@ -16,14 +16,14 @@
 	<div class="search-result{% if timeline.user_has_finished %} has-finished{% endif %}">
 		{% if timeline.current_TL.header_image %}
 			<span class="search-thumbnail">
-				<a href="{% url 'timeline_detail' timeline.current_TL.pk %}">
+				<a href="{% url 'timeline_detail' timeline.current_TL.url timeline.current_TL.slug %}">
 					{% thumbnail timeline.current_TL.header_image "150x150" upscale=False format="PNG" as im %}
 						<img class="timeline-image" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
 					{% endthumbnail %}
 				</a>
 			</span>
 		{% endif %}
-		<h3><a href="{% url 'timeline_detail' timeline.current_TL.pk %}">
+		<h3><a href="{% url 'timeline_detail' timeline.current_TL.url timeline.current_TL.slug %}">
 		{{ timeline.current_TL.title }}</a></h3>
 	  {% if timeline.current_TL.creator.is_active %}
 			<p>by <b><a href="{% url 'view_user' timeline.current_TL.creator %}">{{ timeline.current_TL.creator }}</a></b></p>

@@ -26,3 +26,5 @@ class TimelineAdmin(admin.ModelAdmin):
 
 admin.site.register(Timeline, TimelineAdmin)
 admin.site.register(Entry)
+admin.site.register(Divider)
+admin.site.register(Image)

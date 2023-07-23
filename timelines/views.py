@@ -20,11 +20,11 @@ class TimelineDetailView(UserPassesTestMixin, TemplateView, HitCountMixin):
 
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
-		timeline = get_object_or_404(Timeline, pk=self.kwargs['pk'])
-		entries = Entry.objects.filter(timeline=self.kwargs['pk'])
-		dividers = Divider.objects.filter(timeline=self.kwargs['pk'])
-		images = Image.objects.filter(timeline=self.kwargs['pk'])
-		episodes = Episode.objects.filter(timeline=self.kwargs['pk'])
+		timeline = get_object_or_404(Timeline, url=self.kwargs['url'])
+		entries = Entry.objects.filter(timeline=timeline)
+		dividers = Divider.objects.filter(timeline=timeline)
+		images = Image.objects.filter(timeline=timeline)
+		episodes = Episode.objects.filter(timeline=timeline)
 		total_entries = len(entries)
 		context['timeline'] = timeline
 		context['total_entries'] = total_entries
@@ -96,7 +96,8 @@ class TimelineDetailView(UserPassesTestMixin, TemplateView, HitCountMixin):
 
 	# Makes it so that hidden timelines are only visible to their creator
 	def test_func(self):
-		timeline = get_object_or_404(Timeline, pk=self.kwargs['pk'])
+		print('f')
+		timeline = get_object_or_404(Timeline, url=self.kwargs['url'])
 		if timeline.hidden == True:
 			return timeline.creator == self.request.user
 		else:

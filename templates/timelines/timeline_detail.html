@@ -13,8 +13,8 @@
 			To see all your hidden timelines, go to your profile page.</h3>
 	{% endif %}
 	{% if has_edit_permissions %}
-		<p class="helper-text"><a href="{% url 'timeline_edit' timeline.pk %}">Edit</a> | 
-		<a href="{% url 'timeline_delete' timeline.pk %}">Delete</a></p>
+		<p class="helper-text"><a href="{% url 'timeline_edit' timeline.url %}">Edit</a> | 
+		<a href="{% url 'timeline_delete' timeline.url %}">Delete</a></p>
 	{% endif %}
 	<h1 class="timeline-header">{{ timeline.title|upper }}</h1>
 
@@ -29,13 +29,13 @@
 		{% if user.is_authenticated %}
 			<span class="bookmark-button">
 			<form method="post" class="bookmark-change">{% csrf_token %}
-				<div id="{{ timeline.pk }}-remove-bookmark" {% if user not in timeline.bookmarks.all %}hidden{% endif %}>
-					<button type="submit" class="remove-bookmark" value="{{ timeline.pk }}">
+				<div id="{{ timeline.url }}-remove-bookmark" {% if user not in timeline.bookmarks.all %}hidden{% endif %}>
+					<button type="submit" class="remove-bookmark" value="{{ timeline.url }}">
 						Remove bookmark
 					</button>
 				</div>
-				<div id="{{ timeline.pk }}-add-bookmark" {% if user in timeline.bookmarks.all %}hidden{% endif %}>
-					<button type="submit" class="add-bookmark" value="{{ timeline.pk }}">
+				<div id="{{ timeline.url }}-add-bookmark" {% if user in timeline.bookmarks.all %}hidden{% endif %}>
+					<button type="submit" class="add-bookmark" value="{{ timeline.url }}">
 						Add bookmark
 					</button>	
 				</div>

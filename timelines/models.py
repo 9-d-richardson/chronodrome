@@ -90,7 +90,7 @@ class Timeline(models.Model, HitCountMixin):
 		return self.title
 
 	def get_absolute_url(self):
-		return reverse('timeline_detail', args=[str(self.id)])
+		return reverse('timeline_detail', kwargs={'url': str(self.url)})
 
 
 # Do we want to limit just the number of entries to 1000, or entries plus dividers?

@@ -9,8 +9,8 @@ def bookmarkChange(request):
 	if (request.headers.get('X-Requested-With') == 'XMLHttpRequest' and 
 		request.method == 'POST'):
 		action = request.POST.get('action')
-		timeline_id = request.POST.get('timelineID')
-		timeline = get_object_or_404(Timeline, pk = timeline_id)
+		timeline_url = request.POST.get('timelineID')
+		timeline = get_object_or_404(Timeline, url = timeline_url)
 		user = request.user
 		if action == 'add-bookmark':
 			timeline.bookmarks.add(user)
