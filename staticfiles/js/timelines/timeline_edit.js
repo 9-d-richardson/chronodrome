@@ -41,13 +41,6 @@ $(function() {
 
 	itemTemplates['importepisodes'] = $('.importepisodes-inner-div:last').clone(true)
 	totalItems['importepisodes'] = $('#id_importepisodes-TOTAL_FORMS')
-
-/*Removes images that have been prepared for upload. Will have to rewrite this
-a bit if we make the form more complicated with extra divs. */
-	$(document).on('click', 'button.remove-image', function(e) {
-		e.preventDefault();
-		$(this).siblings('input[type="file"]').val(null);
-	});
 			
 	/* Updates the attributes and header of each timeline item to match its new 
 	position */

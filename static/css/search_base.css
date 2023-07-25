@@ -12,12 +12,6 @@
 	padding-right: 5px;
 }
 
-/*Puts the thumbnail image in the right space*/
-.search-thumbnail {
-	float: right;
-	padding-left: 5px;
-}
-
 /*Shrinks margin around the descriptions*/
 .truncated-description {
 	margin-top: 5px;

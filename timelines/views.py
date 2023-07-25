@@ -2,6 +2,8 @@ from django.views.generic.base import TemplateView
 from django.contrib.auth.mixins import UserPassesTestMixin
 
 from django.shortcuts import get_object_or_404
+from django.urls import reverse_lazy
+from django.http import HttpResponseRedirect
 
 from hitcount.models import HitCount
 from hitcount.views import HitCountMixin
@@ -17,6 +19,17 @@ class TimelineDetailView(UserPassesTestMixin, TemplateView, HitCountMixin):
 	they've finished the whole timeline
 	'''
 	template_name = 'timelines/timeline_detail.html'
+
+	''' The get method is overwritten to redirect users to the URL with the 
+	correct slug, if they used an address with an incorrect slug'''
+	def get(self, request, *args, **kwargs):
+		timeline = get_object_or_404(Timeline, url=self.kwargs['url'])
+		if 'slug' not in self.kwargs or self.kwargs['slug'] != timeline.slug:
+			self.kwargs['slug'] = timeline.slug
+			return HttpResponseRedirect(reverse_lazy('timeline_detail', 
+				kwargs=self.kwargs))
+		else:
+			return super(TimelineDetailView, self).get(request, **kwargs)
 
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
@@ -94,11 +107,15 @@ class TimelineDetailView(UserPassesTestMixin, TemplateView, HitCountMixin):
 			'finished_episodes_count': finished_episodes_count}
 		return matching_eps_dict
 
-	# Makes it so that hidden timelines are only visible to their creator
+	# Makes it so hidden timelines are only visible to their creator and admins
 	def test_func(self):
-		print('f')
 		timeline = get_object_or_404(Timeline, url=self.kwargs['url'])
 		if timeline.hidden == True:
-			return timeline.creator == self.request.user
+			if timeline.creator == self.request.user:
+				return True
+			elif self.request.user.is_superuser:
+				return True
+			else:
+				return False
 		else:
 			return True

@@ -39,6 +39,7 @@ class EditProfile(LoginRequiredMixin, FormView):
 		initial['username'] = user.username
 		initial['email'] = user.email
 		initial['user_description'] = user.user_description
+		initial['avatar'] = user.avatar
 		return initial
 
 	def form_invalid(self, form):
@@ -51,7 +52,8 @@ class EditProfile(LoginRequiredMixin, FormView):
 
 	def post(self, request, *args, **kwargs):
 		user = self.request.user
-		form = CustomUserChangeForm(request.POST, instance=user)
+		form = CustomUserChangeForm(request.POST, request.FILES, instance=user)
+		print(form)
 		if form.is_bound and form.is_valid():
 			with transaction.atomic():
 				form.save()

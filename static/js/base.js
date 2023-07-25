@@ -15,17 +15,17 @@ window.addEventListener('DOMContentLoaded', focus_on_search, false);
 $(function() {
 	$(".bookmark-change button").click(function(e) {
 		e.preventDefault();
-		var timelineID = $(this).val();
+		var timelineURL = $(this).val();
 		$.ajax({
 			type: 'POST',
 			url: '/timelines/ajax/bookmark_change',
 			data: {
 				'action': $(this).attr('class'), 
-				'timelineID': timelineID, 
+				'timelineURL': timelineURL, 
 				'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val()
 			},
 			success: function(response) {
-				changeHTMLAfterBookmarkChange(timelineID);
+				changeHTMLAfterBookmarkChange(timelineURL);
 			},
 			error: function(response) {
 				console.log(response);
@@ -33,8 +33,8 @@ $(function() {
 		});
 	});
 
-	function changeHTMLAfterBookmarkChange(timelineID){
-		$('div#' + timelineID + '-add-bookmark').toggle();
-		$('div#' + timelineID + '-remove-bookmark').toggle();
+	function changeHTMLAfterBookmarkChange(timelineURL){
+		$('div#' + timelineURL + '-add-bookmark').toggle();
+		$('div#' + timelineURL + '-remove-bookmark').toggle();
 	}
 })

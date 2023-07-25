@@ -55,7 +55,8 @@ class CustomUserChangeForm(s_o.CustomModelForm):
 
 	class Meta:
 		model = CustomUser
-		fields = ('username', 'email', 'user_description', 'check_password')
+		fields = ['username', 'email', 'user_description', 'avatar',
+			'check_password']
 
 	username = username
 	email = email
@@ -65,6 +66,11 @@ class CustomUserChangeForm(s_o.CustomModelForm):
 		required=False,
 		error_messages={'max_length': s_c.max_length_error},
 		label="Describe yourself:"
+	)
+	avatar = forms.ImageField(
+		required=False,
+		label="Avatar:",
+		widget=s_o.CustomImageInput
 	)
 	check_password = check_password
 

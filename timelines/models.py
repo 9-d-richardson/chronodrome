@@ -65,7 +65,7 @@ class Timeline(models.Model, HitCountMixin):
 	)
 	url = ShortUUIDField(
 		length=10,
-    )
+	)
 	slug = models.SlugField()
 
 	class Meta:
@@ -83,7 +83,12 @@ class Timeline(models.Model, HitCountMixin):
 			self.header_image = None
 			super(Timeline, self).save(*args, **kwargs)
 			self.header_image = saved_header_image
-		self.slug = slugify(self.title)
+
+		self.slug = slugify(self.title[:50])
+		''' This if statement is so that if a title is only made up of 
+		characters that get removed by slugify, it doesn't break the URLs '''
+		if self.slug == '':
+			self.slug = '-'
 		super(Timeline, self).save(*args, **kwargs)
 
 	def __str__(self):

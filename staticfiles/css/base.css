@@ -160,3 +160,9 @@ text on the left, both for timeline_detail and search_base */
 	give more space to the text on the same line */
 	width: 150px;
 }
+
+/*Puts thumbnail images to the right of text */
+.right-justified-thumbnail {
+	float: right;
+	padding-left: 5px;
+}

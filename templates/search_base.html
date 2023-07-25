@@ -12,26 +12,34 @@
 
 	{% include "widgets/pagination_bar.html" %}
 
-	{% for timeline in page_obj %}
+	{% for timeline in page_obj %}{% with timeline.current_TL as current_TL %}
 	<div class="search-result{% if timeline.user_has_finished %} has-finished{% endif %}">
-		{% if timeline.current_TL.header_image %}
-			<span class="search-thumbnail">
-				<a href="{% url 'timeline_detail' timeline.current_TL.url timeline.current_TL.slug %}">
-					{% thumbnail timeline.current_TL.header_image "150x150" upscale=False format="PNG" as im %}
+		{% if current_TL.header_image %}
+			<span class="right-justified-thumbnail">
+				<a href="{% url 'timeline_detail' current_TL.url current_TL.slug %}">
+					{% thumbnail current_TL.header_image "150x150" upscale=False format="PNG" as im %}
 						<img class="timeline-image" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
 					{% endthumbnail %}
 				</a>
 			</span>
 		{% endif %}
-		<h3><a href="{% url 'timeline_detail' timeline.current_TL.url timeline.current_TL.slug %}">
-		{{ timeline.current_TL.title }}</a></h3>
-	  {% if timeline.current_TL.creator.is_active %}
-			<p>by <b><a href="{% url 'view_user' timeline.current_TL.creator %}">{{ timeline.current_TL.creator }}</a></b></p>
+		<h3><a href="{% url 'timeline_detail' current_TL.url current_TL.slug %}">
+		{{ current_TL.title }}</a></h3>
+	  {% if current_TL.creator.is_active %}
+			<p>by <b><a href="{% url 'view_user' current_TL.creator %}">{{ current_TL.creator }}</a></b>
+			{% if current_TL.creator.avatar %}
+				<a href="{% url 'view_user' current_TL.creator %}">
+					{% thumbnail current_TL.creator.avatar "25x25" upscale=False format="PNG" as im %}
+						<img class="timeline-image" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+					{% endthumbnail %}
+				</a>
+			{% endif %}
+			</p>
 		{% else %}
-			<p>by <b>{{ timeline.current_TL.creator }}</b> (deleted)
+			<p>by <b>{{ current_TL.creator }}</b> (deleted)
 		{% endif %}
 		<p class="truncated-description">
-			{{ timeline.current_TL.description|truncatechars:255 }}
+			{{ current_TL.description|truncatechars:255 }}
 		</p>
 
 		<div class="bookmark-row">
@@ -48,13 +56,13 @@
 
 				{% if user.is_authenticated %}<span class="bookmark-button">
 					<form method="post" class="bookmark-change">{% csrf_token %}
-						<div id="{{ timeline.current_TL.pk }}-remove-bookmark" {% if not timeline.is_bookmarked %}hidden{% endif %}>
-							<button type="submit" class="remove-bookmark" value="{{ timeline.current_TL.pk }}">
+						<div id="{{ current_TL.url }}-remove-bookmark" {% if not timeline.is_bookmarked %}hidden{% endif %}>
+							<button type="submit" class="remove-bookmark" value="{{ current_TL.url }}">
 								Remove bookmark
 							</button>
 						</div>
-						<div id="{{ timeline.current_TL.pk }}-add-bookmark" {% if timeline.is_bookmarked %}hidden{% endif %}>
-							<button type="submit" class="add-bookmark" value="{{ timeline.current_TL.pk }}">
+						<div id="{{ current_TL.url }}-add-bookmark" {% if timeline.is_bookmarked %}hidden{% endif %}>
+							<button type="submit" class="add-bookmark" value="{{ current_TL.url }}">
 								Add bookmark
 							</button>
 						</div>
@@ -66,7 +74,7 @@
 	{% if not forloop.last %}
 		<hr>
 	{% endif %}
-	{% endfor %}
+	{% endwith %}{% endfor %}
 
 	<br>
 	{% include "widgets/pagination_bar.html" %}

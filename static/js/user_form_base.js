@@ -47,10 +47,35 @@ function markFieldErrors() {
 	}) 
 }
 
-/*Disables the submission button after the first click. Hopefully a temporary 
-solution until a better idempotency approach is implemented */
+/*Disables the submission button after the first click. Also disables inputting
+text in case the user hits the back button after submitting (so that they don't
+override anything accidentally - this way they have to refresh the page and see
+the latest version). Doesn't disable uploading files though, since that works
+differently than text. Hopefully a temporary solution until a better 
+idempotency approach is implemented. */
 function preventDoubleSubmissions() {
 	$('form:not([action="/search/"])').submit(function() {
-		$('input[type="submit"]').attr("disabled", true);
+		$('input[type="submit"]').prop("disabled", true);
+		$('textarea,input[type="text"]').prop("readonly", true);
 	})
 }
+
+/* If the user has uploaded a new avatar/header image, but also marked the 
+previous image for deletion, that normally produces an error. This function
+unchecks the delete box in that case, discreetly avoiding the error. Note that 
+it only works because the avatar/header image is first in the form, and would
+have to be rewritten otherwise. */
+function deleteAndReplaceImage() {
+	$('form:not([action="/search/"])').submit(function() {
+		if ($('input[type="file"]').get(0).files.length != 0) {
+			$('input[name$="-clear"]').first().prop("checked", false)
+		}
+	})
+}
+
+/*Removes images that have been prepared for upload. Will have to rewrite this
+a bit if we make the form more complicated with extra divs. */
+$(document).on('click', 'button.remove-image', function(e) {
+	e.preventDefault();
+	$(this).siblings('input[type="file"]').val(null);
+});

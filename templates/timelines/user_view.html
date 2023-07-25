@@ -1,10 +1,21 @@
 {% extends 'search_base.html' %}
+{% load thumbnail %}
 
 {% block title %}{{ viewed_user }}{% endblock title %}
 
 {% block top %}
 {% if viewed_user.is_active %}
-	<h1>Profile: {{ viewed_user }}</h1>
+	<h2>
+		User profile: {{ viewed_user }}
+		{% if viewed_user.avatar %}<span class="right-justified-thumbnail">
+			<a href="{{ viewed_user.avatar.url }}">
+				{% thumbnail viewed_user.avatar "150x150" upscale=False format="PNG" as im %}
+					<img class="timeline-image" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+				{% endthumbnail %}
+			</a>
+		</span>{% endif %}
+	</h2>
+
 	<blockquote>{{ viewed_user.user_description|linebreaks }}</blockquote>
 	{% if finished_TLs %}
 		<p><b>{{ viewed_user }}</b> has finished
