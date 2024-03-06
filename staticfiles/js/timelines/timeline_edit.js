@@ -206,7 +206,7 @@ because it also gets called when the page first loads */
 		button.addClass('temp-disabled')
 		deletedName = $('#' + idBase + fieldToGetNameFrom[itemType]).val();
 		if (deletedName.length > 30) {
-			deletedName = deletedVal.slice(0,25) + '...'
+			deletedName = deletedName.slice(0,25) + '...'
 		}
 		undeleteText = '<p><a class="' + itemType + '-undelete" id="' + idBase + 
 			'undelete" href="javascript:void(0)"> Undo Delete ' + 
